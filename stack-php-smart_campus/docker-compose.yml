@@ -13,8 +13,8 @@ services:
     container_name: smart_campus_php
     volumes:
       - "./:/var/www/html/:cached"
-      - symfony-var:/var/www/html/projet/var
-      - symfony-vendor:/var/www/html/projet/vendor
+      - symfony-var:/var/www/html/projet_symfony/var
+      - symfony-vendor:/var/www/html/projet_symfony/vendor
   web:
     container_name: smart_campus_web
     build:
@@ -25,8 +25,8 @@ services:
       - "8887:81"
     volumes:
       - "./:/var/www/html/:cached"
-      - symfony-var:/var/www/html/projet/var
-      - symfony-vendor:/var/www/html/projet/vendor
+      - symfony-var:/var/www/html/projet_symfony/var
+      - symfony-vendor:/var/www/html/projet_symfony/vendor
   pma:
     image: phpmyadmin/phpmyadmin
     container_name: smart_campus_pma
