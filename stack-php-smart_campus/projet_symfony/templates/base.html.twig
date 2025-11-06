@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Bienvenue!{% endblock %}</title>
+    {#
+    C'est ici que vous insérez les liens vers vos feuilles de style (CSS)
+    et autres balises <meta> communes à tout le site.
+    #}
+    {% block stylesheets %}{% endblock %}
+    {#
+    Si vous utilisez Webpack Encore pour gérer vos assets (JS/CSS),
+    vous utiliserez des fonctions comme encore_entry_link_tags().
+    #}
+</head>
+<body>
+{#
+Le bloc 'body' est l'endroit où le contenu spécifique de chaque page
+enfant sera inséré.
+#}
+{% block body %}{% endblock %}
+{#
+C'est ici que vous insérez les liens vers vos scripts JavaScript (JS).
+#}
+{% block javascripts %}{% endblock %}
+</body>
+</html>
