@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello PageDeLiensController!{% endblock %}
+
+{% block body %}
+
+
+<h1>Page de redirection temporaire</h1>
+
+<ul>
+    <li><a href="{{ path('app_ajouter_sa') }}">Ajouter un SA</a></li>
+    <li><a href="{{ path('app_supprimer_sa') }}">Supprimer un SA</a></li>
+</ul>
+
+{% endblock %}
