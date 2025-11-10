@@ -11,7 +11,7 @@ class Salle
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id_salle = null;
+    private ?int $id = null;
 
     #[ORM\Column(length: 50)]
     private ?string $nom_salle = null;
@@ -28,8 +28,8 @@ class Salle
     #[ORM\Column(nullable: true)]
     private ?\DateTime $date_modification = null;
 
-    #[ORM\OneToOne(mappedBy: 'relation', cascade: ['persist', 'remove'])]
-    private ?SystemeAcquisition $id_sa = null;
+    #[ORM\OneToOne(mappedBy: 'salle', cascade: ['persist', 'remove'])]
+    private ?SystemeAcquisition $systemeAcquisition = null;
 
     #[ORM\ManyToOne(inversedBy: 'id_salle')]
     private ?Demande $demande = null;

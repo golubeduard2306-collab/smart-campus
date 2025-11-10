@@ -95,6 +95,18 @@ class Demande
         return $this;
     }
 
+    public function getSystemeAcquisition(): ?SystemeAcquisition
+    {
+        return $this->systemeAcquisition;
+    }
+
+    public function setSystemeAcquisition(?SystemeAcquisition $systemeAcquisition): static
+    {
+        $this->systemeAcquisition = $systemeAcquisition;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Salle>
      */
@@ -121,18 +133,6 @@ class Demande
                 $idSalle->setDemande(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getSystemeAcquisition(): ?SystemeAcquisition
-    {
-        return $this->systemeAcquisition;
-    }
-
-    public function setSystemeAcquisition(?SystemeAcquisition $systemeAcquisition): static
-    {
-        $this->systemeAcquisition = $systemeAcquisition;
 
         return $this;
     }
