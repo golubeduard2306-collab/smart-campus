@@ -15,16 +15,16 @@ class SystemeAcquisition
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(length: 20)]
+    private ?string $statut = null;
+
     #[ORM\Column]
     private ?\DateTime $date_creation = null;
-
-    #[ORM\Column(length: 19)]
-    private ?string $statut = null;
 
     /**
      * @var Collection<int, Demande>
      */
-    #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'idÃ_sa')]
+    #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'id_sa')]
     private Collection $demandes;
 
     public function __construct()
@@ -37,18 +37,6 @@ class SystemeAcquisition
         return $this->id;
     }
 
-    public function getDateCreation(): ?\DateTime
-    {
-        return $this->date_creation;
-    }
-
-    public function setDateCreation(\DateTime $date_creation): static
-    {
-        $this->date_creation = $date_creation;
-
-        return $this;
-    }
-
     public function getStatut(): ?string
     {
         return $this->statut;
@@ -57,6 +45,18 @@ class SystemeAcquisition
     public function setStatut(string $statut): static
     {
         $this->statut = $statut;
+
+        return $this;
+    }
+
+    public function getDateCreation(): ?\DateTime
+    {
+        return $this->date_creation;
+    }
+
+    public function setDateCreation(\DateTime $date_creation): static
+    {
+        $this->date_creation = $date_creation;
 
         return $this;
     }
@@ -73,7 +73,7 @@ class SystemeAcquisition
     {
         if (!$this->demandes->contains($demande)) {
             $this->demandes->add($demande);
-            $demande->setIdÃSa($this);
+            $demande->setIdSa($this);
         }
 
         return $this;
@@ -83,8 +83,8 @@ class SystemeAcquisition
     {
         if ($this->demandes->removeElement($demande)) {
             // set the owning side to null (unless already changed)
-            if ($demande->getIdÃSa() === $this) {
-                $demande->setIdÃSa(null);
+            if ($demande->getIdSa() === $this) {
+                $demande->setIdSa(null);
             }
         }
 

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\SalleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SalleRepository::class)]
@@ -11,16 +13,16 @@ class Salle
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id_salle = null;
+    private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 255)]
     private ?string $nom_salle = null;
 
     #[ORM\Column]
     private ?int $etage = null;
 
     #[ORM\Column]
-    private ?int $Nb_fenetres = null;
+    private ?int $nb_fenetres = null;
 
     #[ORM\Column]
     private ?\DateTime $date_creation = null;
@@ -28,11 +30,16 @@ class Salle
     #[ORM\Column(nullable: true)]
     private ?\DateTime $date_modification = null;
 
-    #[ORM\OneToOne(mappedBy: 'relation', cascade: ['persist', 'remove'])]
-    private ?SystemeAcquisition $id_sa = null;
+    /**
+     * @var Collection<int, Demande>
+     */
+    #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'id_salle')]
+    private Collection $demandes;
 
-    #[ORM\ManyToOne(inversedBy: 'id_salle')]
-    private ?Demande $demande = null;
+    public function __construct()
+    {
+        $this->demandes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -65,12 +72,12 @@ class Salle
 
     public function getNbFenetres(): ?int
     {
-        return $this->Nb_fenetres;
+        return $this->nb_fenetres;
     }
 
-    public function setNbFenetres(int $Nb_fenetres): static
+    public function setNbFenetres(int $nb_fenetres): static
     {
-        $this->Nb_fenetres = $Nb_fenetres;
+        $this->nb_fenetres = $nb_fenetres;
 
         return $this;
     }
@@ -99,36 +106,32 @@ class Salle
         return $this;
     }
 
-    public function getIdSa(): ?SystemeAcquisition
+    /**
+     * @return Collection<int, Demande>
+     */
+    public function getDemandes(): Collection
     {
-        return $this->id_sa;
+        return $this->demandes;
     }
 
-    public function setIdSa(?SystemeAcquisition $id_sa): static
+    public function addDemande(Demande $demande): static
     {
-        // unset the owning side of the relation if necessary
-        if ($id_sa === null && $this->id_sa !== null) {
-            $this->id_sa->setRelation(null);
+        if (!$this->demandes->contains($demande)) {
+            $this->demandes->add($demande);
+            $demande->setIdSalle($this);
         }
-
-        // set the owning side of the relation if necessary
-        if ($id_sa !== null && $id_sa->getRelation() !== $this) {
-            $id_sa->setRelation($this);
-        }
-
-        $this->id_sa = $id_sa;
 
         return $this;
     }
 
-    public function getDemande(): ?Demande
+    public function removeDemande(Demande $demande): static
     {
-        return $this->demande;
-    }
-
-    public function setDemande(?Demande $demande): static
-    {
-        $this->demande = $demande;
+        if ($this->demandes->removeElement($demande)) {
+            // set the owning side to null (unless already changed)
+            if ($demande->getIdSalle() === $this) {
+                $demande->setIdSalle(null);
+            }
+        }
 
         return $this;
     }
