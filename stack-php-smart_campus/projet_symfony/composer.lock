@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
     "content-hash": "7ba8a91c8418a11f8b72002d36df2593",
+=======
+    "content-hash": "c20954336fdbb40424a9f0940b0868cb",
+>>>>>>> feature/installer_sa
     "packages": [
         {
             "name": "doctrine/collections",
@@ -4630,6 +4634,7 @@
                 }
             ],
             "time": "2025-09-11T09:57:09+00:00"
+<<<<<<< HEAD
         }
     ],
     "packages-dev": [
@@ -4848,6 +4853,8 @@
                 }
             ],
             "time": "2025-09-11T09:57:09+00:00"
+=======
+>>>>>>> feature/installer_sa
         }
     ],
     "aliases": [],
