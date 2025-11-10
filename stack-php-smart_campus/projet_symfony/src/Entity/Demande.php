@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\DemandeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DemandeRepository::class)]
@@ -15,9 +13,6 @@ class Demande
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $id_demande = null;
-
     #[ORM\Column(length: 20)]
     private ?string $type_demande = null;
 
@@ -25,38 +20,19 @@ class Demande
     private ?\DateTime $date_demande = null;
 
     #[ORM\Column(length: 20)]
-    private ?string $status = null;
-
-    /**
-     * @var Collection<int, Salle>
-     */
-    #[ORM\OneToMany(targetEntity: Salle::class, mappedBy: 'demande')]
-    private Collection $id_salle;
+    private ?string $statut = null;
 
     #[ORM\ManyToOne(inversedBy: 'demandes')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?SystemeAcquisition $systemeAcquisition = null;
+    private ?Salle $id_salle = null;
 
-    public function __construct()
-    {
-        $this->id_salle = new ArrayCollection();
-    }
+    #[ORM\ManyToOne(inversedBy: 'demandes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?SystemeAcquisition $id_sa = null;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdDemande(): ?int
-    {
-        return $this->id_demande;
-    }
-
-    public function setIdDemande(int $id_demande): static
-    {
-        $this->id_demande = $id_demande;
-
-        return $this;
     }
 
     public function getTypeDemande(): ?string
@@ -83,56 +59,38 @@ class Demande
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatut(): ?string
     {
-        return $this->status;
+        return $this->statut;
     }
 
-    public function setStatus(string $status): static
+    public function setStatut(string $statut): static
     {
-        $this->status = $status;
+        $this->statut = $statut;
 
         return $this;
     }
 
-    public function getSystemeAcquisition(): ?SystemeAcquisition
-    {
-        return $this->systemeAcquisition;
-    }
-
-    public function setSystemeAcquisition(?SystemeAcquisition $systemeAcquisition): static
-    {
-        $this->systemeAcquisition = $systemeAcquisition;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Salle>
-     */
-    public function getIdSalle(): Collection
+    public function getIdSalle(): ?Salle
     {
         return $this->id_salle;
     }
 
-    public function addIdSalle(Salle $idSalle): static
+    public function setIdSalle(?Salle $id_salle): static
     {
-        if (!$this->id_salle->contains($idSalle)) {
-            $this->id_salle->add($idSalle);
-            $idSalle->setDemande($this);
-        }
+        $this->id_salle = $id_salle;
 
         return $this;
     }
 
-    public function removeIdSalle(Salle $idSalle): static
+    public function getIdSa(): ?SystemeAcquisition
     {
-        if ($this->id_salle->removeElement($idSalle)) {
-            // set the owning side to null (unless already changed)
-            if ($idSalle->getDemande() === $this) {
-                $idSalle->setDemande(null);
-            }
-        }
+        return $this->id_sa;
+    }
+
+    public function setIdSa(?SystemeAcquisition $id_sa): static
+    {
+        $this->id_sa = $id_sa;
 
         return $this;
     }

@@ -15,16 +15,16 @@ class SystemeAcquisition
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(length: 20)]
+    private ?string $statut = null;
+
     #[ORM\Column]
     private ?\DateTime $date_creation = null;
-
-    #[ORM\Column(length: 19)]
-    private ?string $statut = null;
 
     /**
      * @var Collection<int, Demande>
      */
-    #[ORM\OneToMany(mappedBy: 'systemeAcquisition', targetEntity: Demande::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'id_sa')]
     private Collection $demandes;
 
     #[ORM\OneToOne(inversedBy: 'systemeAcquisition', cascade: ['persist', 'remove'])]
@@ -42,18 +42,6 @@ class SystemeAcquisition
         return $this->id;
     }
 
-    public function getDateCreation(): ?\DateTime
-    {
-        return $this->date_creation;
-    }
-
-    public function setDateCreation(\DateTime $date_creation): static
-    {
-        $this->date_creation = $date_creation;
-
-        return $this;
-    }
-
     public function getStatut(): ?string
     {
         return $this->statut;
@@ -66,14 +54,15 @@ class SystemeAcquisition
         return $this;
     }
 
-    public function getSalle(): ?Salle
+    public function getDateCreation(): ?\DateTime
     {
-        return $this->salle;
+        return $this->date_creation;
     }
 
-    public function setSalle(?Salle $salle): static
+    public function setDateCreation(\DateTime $date_creation): static
     {
-        $this->salle = $salle;
+        $this->date_creation = $date_creation;
+
         return $this;
     }
 
@@ -89,7 +78,7 @@ class SystemeAcquisition
     {
         if (!$this->demandes->contains($demande)) {
             $this->demandes->add($demande);
-            $demande->setId�Sa($this);
+            $demande->setIdSa($this);
         }
 
         return $this;
@@ -99,8 +88,8 @@ class SystemeAcquisition
     {
         if ($this->demandes->removeElement($demande)) {
             // set the owning side to null (unless already changed)
-            if ($demande->getId�Sa() === $this) {
-                $demande->setId�Sa(null);
+            if ($demande->getIdSa() === $this) {
+                $demande->setIdSa(null);
             }
         }
 

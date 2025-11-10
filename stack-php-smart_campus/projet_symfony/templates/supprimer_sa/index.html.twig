@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello SupprimerSaController!{% endblock %}
+{% block title %}Supprimer un SA{% endblock %}
 
 {% block body %}
     <style>
@@ -31,8 +31,18 @@
             margin-bottom: 40px;
         }
 
+        input[type="number"] {
+            padding: 10px;
+            font-size: 1em;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+
         button {
-            background-color: #4caf50;
+            background-color: #f44336;
             color: white;
             border: none;
             border-radius: 5px;
@@ -45,15 +55,49 @@
         }
 
         button:hover {
-            background-color: #43a047;
+            background-color: #d32f2f;
+        }
+
+        .message {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .message.success {
+            color: green;
+        }
+
+        .message.error {
+            color: red;
         }
     </style>
-
 
     <h1>Supprimer un SA existant</h1>
 
     <div class="card">
         <p>Supprimer un SA de la base de données</p>
-        <button onclick="alert('Suppression confirmé !')">Confirmer la suppression</button>
+
+        {# Formulaire qui envoie une requête POST au contrôleur #}
+        <form method="post" action="{{ path('app_supprimer_sa') }}" onsubmit="return confirmerSuppression();">
+            <input type="number" name="id" id="id" placeholder="Entrez l'ID du SA à supprimer" required min="1">
+            <button type="submit">Supprimer le SA</button>
+        </form>
+
+        {# Messages de confirmation #}
+        {% for message in app.flashes('success') %}
+            <div class="message success">{{ message }}</div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+            <div class="message error">{{ message }}</div>
+        {% endfor %}
     </div>
+
+    <script>
+        function confirmerSuppression() {
+            const id = document.getElementById('id').value;
+            // Affiche une boîte de confirmation
+            return confirm("Voulez-vous vraiment supprimer le SA #" + id + " ?");
+        }
+    </script>
 {% endblock %}
