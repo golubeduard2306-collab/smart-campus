@@ -24,8 +24,11 @@ class SystemeAcquisition
     /**
      * @var Collection<int, Demande>
      */
-    #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'idÃ_sa')]
+    #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'systemeAcquisition')]
     private Collection $demandes;
+
+    #[ORM\OneToOne(inversedBy: 'id_sa', cascade: ['persist', 'remove'])]
+    private ?Salle $relation = null;
 
     public function __construct()
     {
@@ -73,7 +76,7 @@ class SystemeAcquisition
     {
         if (!$this->demandes->contains($demande)) {
             $this->demandes->add($demande);
-            $demande->setIdÃSa($this);
+            $demande->setSystemeAcquisition($this);
         }
 
         return $this;
@@ -83,10 +86,22 @@ class SystemeAcquisition
     {
         if ($this->demandes->removeElement($demande)) {
             // set the owning side to null (unless already changed)
-            if ($demande->getIdÃSa() === $this) {
-                $demande->setIdÃSa(null);
+            if ($demande->getSystemeAcquisition() === $this) {
+                $demande->setSystemeAcquisition(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getRelation(): ?Salle
+    {
+        return $this->relation;
+    }
+
+    public function setRelation(?Salle $relation): static
+    {
+        $this->relation = $relation;
 
         return $this;
     }

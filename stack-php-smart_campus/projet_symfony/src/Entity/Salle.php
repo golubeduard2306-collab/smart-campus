@@ -11,7 +11,7 @@ class Salle
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id_salle = null;
+    private ?int $id = null;
 
     #[ORM\Column(length: 50)]
     private ?string $nom_salle = null;
