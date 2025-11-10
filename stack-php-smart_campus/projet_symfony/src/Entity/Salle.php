@@ -31,6 +31,9 @@ class Salle
     #[ORM\OneToOne(mappedBy: 'relation', cascade: ['persist', 'remove'])]
     private ?SystemeAcquisition $id_sa = null;
 
+    #[ORM\ManyToOne(inversedBy: 'id_salle')]
+    private ?Demande $demande = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -114,6 +117,18 @@ class Salle
         }
 
         $this->id_sa = $id_sa;
+
+        return $this;
+    }
+
+    public function getDemande(): ?Demande
+    {
+        return $this->demande;
+    }
+
+    public function setDemande(?Demande $demande): static
+    {
+        $this->demande = $demande;
 
         return $this;
     }
