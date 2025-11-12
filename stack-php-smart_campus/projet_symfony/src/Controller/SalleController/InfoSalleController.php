@@ -1,13 +1,18 @@
 <?php
 
+
 namespace App\Controller\SalleController;
 
+<<<<<<< HEAD
 use App\Entity\Demande;
 use App\Entity\Salle;
 use App\Entity\SystemeAcquisition;
 use App\Repository\SalleRepository;
 use App\Repository\SystemeAcquisitionRepository;
 use Doctrine\ORM\EntityManagerInterface;
+=======
+use App\Repository\SalleRepository;
+>>>>>>> 6d65c56032ec552fcfc6d6389c77cc76e5f16de4
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,6 +21,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException; // Optionnel, 
 
 final class InfoSalleController extends AbstractController
 {
+<<<<<<< HEAD
     // 1. Mise à jour de la route : Utilisez un nom simple pour le paramètre
     #[Route('/info-salle/{nomSalle}', name: 'app_info_salle')]
     public function index(
@@ -84,6 +90,28 @@ final class InfoSalleController extends AbstractController
             'controller_name' => 'InfoSalleController',
             'salle' => $salle,
             'demandeEnCours' => $demandeEnCours,
+=======
+    #[Route('/info-salle/{salleId}', name: 'app_info_salle')]
+    public function showInfoSalle(
+        // Injecte la dépendance du Repository pour accéder à la base de données
+        SalleRepository $salleRepository,
+        // Récupère l'ID depuis l'URL
+        int $salleId
+    ): Response {
+
+        // 1. Recherche de la Salle par son ID
+        $salle = $salleRepository->find($salleId);
+
+        // 2. Gestion de l'erreur 404 (si non trouvée)
+        if (!$salle) {
+            // Renvoie une réponse 404 Not Found
+            throw $this->createNotFoundException('La salle demandée n\'existe pas.');
+        }
+
+        // 3. Rendu du template Twig avec l'objet Salle trouvé
+        return $this->render('info_salle/index.html.twig', [
+            'salle' => $salle,
+>>>>>>> 6d65c56032ec552fcfc6d6389c77cc76e5f16de4
         ]);
     }
 }

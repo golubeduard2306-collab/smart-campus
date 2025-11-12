@@ -24,11 +24,19 @@ class SystemeAcquisition
     /**
      * @var Collection<int, Demande>
      */
+<<<<<<< HEAD
     #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'id_sa')]
     private Collection $demandes;
 
     #[ORM\OneToOne(mappedBy: 'SA', cascade: ['persist', 'remove'])]
     private ?Salle $salle = null;
+=======
+    #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'systemeAcquisition')]
+    private Collection $demandes;
+
+    #[ORM\OneToOne(inversedBy: 'id_sa', cascade: ['persist', 'remove'])]
+    private ?Salle $relation = null;
+>>>>>>> 6d65c56032ec552fcfc6d6389c77cc76e5f16de4
 
     public function __construct()
     {
@@ -76,7 +84,11 @@ class SystemeAcquisition
     {
         if (!$this->demandes->contains($demande)) {
             $this->demandes->add($demande);
+<<<<<<< HEAD
             $demande->setIdSa($this);
+=======
+            $demande->setSystemeAcquisition($this);
+>>>>>>> 6d65c56032ec552fcfc6d6389c77cc76e5f16de4
         }
 
         return $this;
@@ -86,14 +98,20 @@ class SystemeAcquisition
     {
         if ($this->demandes->removeElement($demande)) {
             // set the owning side to null (unless already changed)
+<<<<<<< HEAD
             if ($demande->getIdSa() === $this) {
                 $demande->setIdSa(null);
+=======
+            if ($demande->getSystemeAcquisition() === $this) {
+                $demande->setSystemeAcquisition(null);
+>>>>>>> 6d65c56032ec552fcfc6d6389c77cc76e5f16de4
             }
         }
 
         return $this;
     }
 
+<<<<<<< HEAD
     public function getSalle(): ?Salle
     {
         return $this->salle;
@@ -112,6 +130,16 @@ class SystemeAcquisition
         }
 
         $this->salle = $salle;
+=======
+    public function getRelation(): ?Salle
+    {
+        return $this->relation;
+    }
+
+    public function setRelation(?Salle $relation): static
+    {
+        $this->relation = $relation;
+>>>>>>> 6d65c56032ec552fcfc6d6389c77cc76e5f16de4
 
         return $this;
     }
