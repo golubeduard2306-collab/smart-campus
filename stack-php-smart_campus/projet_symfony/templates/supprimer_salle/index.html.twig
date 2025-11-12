@@ -1,20 +1,104 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello SupprimerSalleController!{% endblock %}
+{% block title %}Supprimer une salle{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fa;
+            text-align: center;
+            padding: 60px;
+        }
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+        h1 {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/var/www/html/projet_symfony/src/Controller/SupprimerSalleController.php</code></li>
-        <li>Your template at <code>/var/www/html/projet_symfony/templates/supprimer_salle/index.html.twig</code></li>
-    </ul>
-</div>
+        .card {
+            background-color: #98c1d9;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        p {
+            font-size: 1.3em;
+            margin-bottom: 40px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 1em;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 600px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 15px 30px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        button:hover {
+            background-color: #d32f2f;
+        }
+
+        .message {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .message.success {
+            color: green;
+        }
+
+        .message.error {
+            color: red;
+        }
+    </style>
+
+    <h1>Supprimer une salle</h1>
+
+    <div class="card">
+        <p>Supprimer une salle de la base de données</p>
+
+        {# Formulaire qui envoie une requête POST au contrôleur #}
+        <form method="post" action="{{ path('app_supprimer_salle') }}" onsubmit="return confirmerSuppression();">
+            <input type="text" name="nom_salle" id="nom_salle" placeholder="Entrez le nom de la salle à supprimer (ex: D206)" required>
+            <button type="submit">Supprimer la salle</button>
+        </form>
+
+        {# Messages de confirmation #}
+        {% for message in app.flashes('success') %}
+            <div class="message success">{{ message }}</div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+            <div class="message error">{{ message }}</div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function confirmerSuppression() {
+            const nomSalle = document.getElementById('nom_salle').value;
+            // Affiche une boîte de confirmation
+            return confirm("Voulez-vous vraiment supprimer la salle \"" + nomSalle + "\" ?");
+        }
+    </script>
 {% endblock %}
