@@ -27,6 +27,11 @@ class SystemeAcquisition
     #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'id_sa')]
     private Collection $demandes;
 
+    #[ORM\OneToOne(inversedBy: 'systemeAcquisition', cascade: ['persist', 'remove'])]
+    private ?Salle $salle = null;
+
+
+
     public function __construct()
     {
         $this->demandes = new ArrayCollection();
