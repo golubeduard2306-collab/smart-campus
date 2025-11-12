@@ -27,6 +27,9 @@ class SystemeAcquisition
     #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'id_sa')]
     private Collection $demandes;
 
+    #[ORM\OneToOne(mappedBy: 'SA', cascade: ['persist', 'remove'])]
+    private ?Salle $salle = null;
+
     public function __construct()
     {
         $this->demandes = new ArrayCollection();
@@ -87,6 +90,28 @@ class SystemeAcquisition
                 $demande->setIdSa(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSalle(): ?Salle
+    {
+        return $this->salle;
+    }
+
+    public function setSalle(?Salle $salle): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($salle === null && $this->salle !== null) {
+            $this->salle->setSA(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($salle !== null && $salle->getSA() !== $this) {
+            $salle->setSA($this);
+        }
+
+        $this->salle = $salle;
 
         return $this;
     }

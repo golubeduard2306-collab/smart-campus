@@ -19,7 +19,7 @@ class AjouterSaController extends AbstractController
 
             // Remplir les champs obligatoires
             $sa->setDateCreation(new \DateTime());
-            $sa->setStatut('Actif'); // ou autre valeur par défaut
+            $sa->setStatut('Inactif'); // ou autre valeur par défaut
 
             $em->persist($sa);
             $em->flush();
