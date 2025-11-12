@@ -2,22 +2,24 @@
 
 {% block title %}Supprimer un SA{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
+    {{ parent() }}
     <style>
-        body {
+        .page-container {
             font-family: Arial, sans-serif;
             background-color: #f5f7fa;
             text-align: center;
             padding: 60px;
+            min-height: calc(100vh - 60px);
         }
 
-        h1 {
+        .page-container h1 {
             font-size: 2em;
             font-weight: bold;
             margin-bottom: 40px;
         }
 
-        .card {
+        .page-container .card {
             background-color: #98c1d9;
             padding: 40px;
             border-radius: 20px;
@@ -26,12 +28,12 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        p {
+        .page-container p {
             font-size: 1.3em;
             margin-bottom: 40px;
         }
 
-        input[type="number"] {
+        .page-container input[type="number"] {
             padding: 10px;
             font-size: 1em;
             border: 2px solid #ccc;
@@ -41,7 +43,7 @@
             margin-bottom: 20px;
         }
 
-        button {
+        .page-container button {
             background-color: #f44336;
             color: white;
             border: none;
@@ -54,24 +56,27 @@
             max-width: 600px;
         }
 
-        button:hover {
+        .page-container button:hover {
             background-color: #d32f2f;
         }
 
-        .message {
+        .page-container .message {
             font-weight: bold;
             margin-top: 20px;
         }
 
-        .message.success {
+        .page-container .message.success {
             color: green;
         }
 
-        .message.error {
+        .page-container .message.error {
             color: red;
         }
     </style>
+{% endblock %}
 
+{% block body %}
+<div class="page-container">
     <h1>Supprimer un SA existant</h1>
 
     <div class="card">
@@ -100,4 +105,5 @@
             return confirm("Voulez-vous vraiment supprimer le SA #" + id + " ?");
         }
     </script>
+</div>
 {% endblock %}

@@ -4,20 +4,21 @@
 
 {% block body %}
     <style>
-        body {
+        .page-container {
             font-family: Arial, sans-serif;
             background-color: #f5f7fa;
             text-align: center;
             padding: 60px;
+            min-height: calc(100vh - 60px);
         }
 
-        h1 {
+        .page-container h1 {
             font-size: 2em;
             font-weight: bold;
             margin-bottom: 40px;
         }
 
-        .card {
+        .page-container .card {
             background-color: #98c1d9;
             padding: 40px;
             border-radius: 20px;
@@ -26,7 +27,7 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        label {
+        .page-container label {
             font-size: 1.1em;
             display: block;
             text-align: left;
@@ -34,7 +35,7 @@
             max-width: 500px;
         }
 
-        input {
+        .page-container input {
             padding: 10px;
             width: 80%;
             max-width: 500px;
@@ -45,7 +46,7 @@
             text-align: center;
         }
 
-        button {
+        .page-container button {
             background-color: #4caf50;
             color: white;
             border: none;
@@ -58,30 +59,31 @@
             max-width: 600px;
         }
 
-        button:hover {
+        .page-container button:hover {
             background-color: #43a047;
         }
 
-        .message {
+        .page-container .message {
             font-weight: bold;
             margin-top: 20px;
         }
 
-        .message.success {
+        .page-container .message.success {
             color: green;
         }
 
-        .message.error {
+        .page-container .message.error {
             color: red;
         }
     </style>
 
+<div class="page-container">
     <h1>Ajouter une nouvelle salle</h1>
 
     <div class="card">
         <p>Remplissez les informations de la salle à ajouter dans la base de données</p>
 
-        {# Formulaire d’ajout de salle #}
+        {# Formulaire d'ajout de salle #}
         <form method="post" action="{{ path('app_ajouter_salle') }}" onsubmit="return confirmerAjout();">
             <label for="nom_salle">Nom de la salle :</label>
             <input type="text" id="nom_salle" name="nom_salle" placeholder="Ex : D207" required>
@@ -111,4 +113,5 @@
             return confirm("Voulez-vous vraiment ajouter cette salle ?");
         }
     </script>
+</div>
 {% endblock %}
