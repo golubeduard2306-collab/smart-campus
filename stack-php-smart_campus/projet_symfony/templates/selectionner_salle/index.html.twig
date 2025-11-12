@@ -32,6 +32,18 @@
             margin-bottom: 20px;
         }
 
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 60%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -95,8 +107,12 @@
     <div class="card">
         <h2>Salles</h2>
 
+        <div class="search-container">
+            <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Rechercher une salle...">
+        </div>
+
         <div class="table-container">
-            <table>
+            <table id="sallesTable">
                 <thead>
                 <tr>
                     <th>Salle</th>
@@ -106,10 +122,9 @@
                 <tbody>
                 {% for salle in salles %}
                     <tr>
-                        {# Appel explicite des getters pour éviter les problèmes de noms de propriétés #}
-                        <td>{{ salle.getNomSalle() }}</td>
+                        <td>{{ salle.nomSalle }}</td>
                         <td>
-                            <form action="{{ path('app_info_salle', {'id_salle': salle.getId()}) }}" method="get">
+                            <form action="{{ path('app_info_salle', {'id': salle.getId()}) }}" method="get">
                                 <button type="submit" class="btn">Page</button>
                             </form>
                         </td>
@@ -123,4 +138,26 @@
             </table>
         </div>
     </div>
+
+    <script>
+        function filterTable() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById('sallesTable');
+            const rows = table.getElementsByTagName('tr');
+
+            // Parcourir toutes les lignes du tableau (sauf l’en-tête)
+            for (let i = 1; i < rows.length; i++) {
+                const cell = rows[i].getElementsByTagName('td')[0]; // Première colonne : nom de salle
+                if (cell) {
+                    const textValue = cell.textContent || cell.innerText;
+                    if (textValue.toLowerCase().includes(filter)) {
+                        rows[i].style.display = '';
+                    } else {
+                        rows[i].style.display = 'none';
+                    }
+                }
+            }
+        }
+    </script>
 {% endblock %}
