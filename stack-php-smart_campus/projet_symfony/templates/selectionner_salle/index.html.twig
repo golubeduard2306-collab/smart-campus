@@ -129,7 +129,7 @@
                     <tr>
                         <td>{{ salle.nomSalle }}</td>
                         <td>
-                            <form action="{{ path('app_info_salle', {'id': salle.getId()}) }}" method="get">
+                            <form action="{{ path('app_info_salle', {'nomSalle': salle.nomSalle}) }}" method="get">
                                 <button type="submit" class="btn">Page</button>
                             </form>
                         </td>
