@@ -12,7 +12,7 @@ class Salle
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'id_salle')]
+    #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -33,7 +33,7 @@ class Salle
     /**
      * @var Collection<int, Demande>
      */
-    #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'id_salle')]
+    #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'idSalle')]
     private Collection $demandes;
 
     public function __construct()

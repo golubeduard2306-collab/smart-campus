@@ -23,12 +23,12 @@ class Demande
     private ?string $statut = null;
 
     #[ORM\ManyToOne(inversedBy: 'demandes')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Salle $id_salle = null;
+    #[ORM\JoinColumn(name: 'id_salle_id', referencedColumnName: 'id', nullable: false)]
+    private ?Salle $idSalle = null;
 
     #[ORM\ManyToOne(inversedBy: 'demandes')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?SystemeAcquisition $id_sa = null;
+    #[ORM\JoinColumn(name: 'id_sa_id', referencedColumnName: 'id', nullable: false)]
+    private ?SystemeAcquisition $idSa = null;
 
     public function getId(): ?int
     {
@@ -73,24 +73,24 @@ class Demande
 
     public function getIdSalle(): ?Salle
     {
-        return $this->id_salle;
+        return $this->idSalle;
     }
 
-    public function setIdSalle(?Salle $id_salle): static
+    public function setIdSalle(?Salle $idSalle): static
     {
-        $this->id_salle = $id_salle;
+        $this->idSalle = $idSalle;
 
         return $this;
     }
 
     public function getIdSa(): ?SystemeAcquisition
     {
-        return $this->id_sa;
+        return $this->idSa;
     }
 
-    public function setIdSa(?SystemeAcquisition $id_sa): static
+    public function setIdSa(?SystemeAcquisition $idSa): static
     {
-        $this->id_sa = $id_sa;
+        $this->idSa = $idSa;
 
         return $this;
     }

@@ -3,48 +3,94 @@
 {% block title %}Salle ...{% endblock %}
 
 {% block body %}
-<style>
-    .conteneur1{
-        justify-items: center;
-        align-content: center;
+    <style>
+        .conteneur1{
+            justify-items: center;
+            align-content: center;
 
-    }
+        }
 
-    section{
-        display: flex;
-        flex-direction: column;
-        background-color: rgba(22, 138, 173, 0.5);
-        border-radius: 10px;
-        padding: 20px 50px 20px 50px;
-        margin: 50px;
-        width: 80%;
-        align-items: center;
+        section{
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(22, 138, 173, 0.5);
+            border-radius: 10px;
+            padding: 20px 50px 20px 50px;
+            margin: 50px;
+            width: 80%;
+            align-items: center;
 
 
-    }
-    button{
-        background-color: rgba(217, 217, 217, 1);
-        max-width: 30%;
-        border: none;
-        border-radius: 5px;
-        padding: 0.5rem;
-        margin: 1rem;
-    }
-</style>
+        }
+        button{
+            background-color: rgba(217, 217, 217, 1);
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem;
+            margin: 1rem;
+        }
+    </style>
 
-<div class="conteneur1">
-    <h1>Salle ...</h1>
+    <div class="conteneur1">
+        <h1>Salle {{ salle.nomSalle }}</h1>
 
-    <section class="sectionEdit">
-        <p>Modifier les informations de la salle ...</p>
-        <Button>modifier</Button>
-        <p>Vous pouvez supprimer la salle ...</p>
-        <button>supprimer</button>
-    </section>
-    <section>
-        <p>Aucun SA n'est installé dans la salle D301.
-            Pour installer un système d'acquisition, cliquer sur le bouton ci-dessous :</p>
-        <button>installer un SA</button>
-    </section>
-</div>
+        {% for message in app.flashes('success') %}
+            <div style="background-color: #4CAF50; color: white; padding: 15px; border-radius: 5px; margin: 20px;">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+            <div style="background-color: #f44336; color: white; padding: 15px; border-radius: 5px; margin: 20px;">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <section class="sectionEdit">
+            <p>Modifier les informations de la salle {{ salle.nomSalle }}</p>
+            <Button>modifier</Button>
+            <p>Vous pouvez supprimer la salle {{ salle.nomSalle }}</p>
+            <button>supprimer</button>
+        </section>
+        {% if demandeEnCours %}
+            <section>
+                <p>Demande {{ demandeEnCours.typeDemande }} en cours pour la salle {{ salle.nomSalle }}.</p>
+                <p>Date de demande : {{ demandeEnCours.dateDemande|date('d/m/Y H:i') }}</p>
+                <form method="POST" action="{{ path('app_info_salle', {'nomSalle': salle.nomSalle}) }}" onsubmit="return confirmerAnnullation();">
+                    <input type="hidden" name="action" value="annuler">
+                    <button type="submit">Annuler la demande</button>
+                </form>
+            </section>
+        {% elseif saInstalle is null %}
+            <section>
+                <p>Aucun SA n'est installé dans la salle {{ salle.nomSalle }}.
+                    Pour installer un système d'acquisition, cliquer sur le bouton ci-dessous :</p>
+                <form method="POST" action="{{ path('app_info_salle', {'nomSalle': salle.nomSalle}) }}" onsubmit="return confirmerInstallation();">
+                    <input type="hidden" name="action" value="installer">
+                    <button type="submit">installer un SA</button>
+                </form>
+            </section>
+        {% else %}
+            <section>
+                <p>Un SA est installé dans la salle {{ salle.nomSalle }}.
+                    Pour désinstaller le système d'acquisition, cliquer sur le bouton ci-dessous :</p>
+                <form method="POST" action="{{ path('app_info_salle', {'nomSalle': salle.nomSalle}) }}" onsubmit="return confirmerDesinstallation();">
+                    <input type="hidden" name="action" value="desinstaller">
+                    <button type="submit">désinstaller le SA</button>
+                </form>
+            </section>
+        {% endif %}
+
+    </div>
+    <script>
+        function confirmerInstallation() {
+            return confirm("Voulez-vous vraiment faire une demande d'installation ?");
+        }
+        function confirmerAnnullation() {
+            return confirm("Voulez-vous vraiment annuler la demande en cours ?");
+        }
+        function confirmerDesinstallation() {
+            return confirm("Voulez-vous vraiment faire une demande de désinstallation ?");
+        }
+    </script>
 {% endblock %}

@@ -24,13 +24,8 @@ class SystemeAcquisition
     /**
      * @var Collection<int, Demande>
      */
-    #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'id_sa')]
+    #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'idSa')]
     private Collection $demandes;
-
-    #[ORM\OneToOne(inversedBy: 'systemeAcquisition', cascade: ['persist', 'remove'])]
-    private ?Salle $salle = null;
-
-
 
     public function __construct()
     {
