@@ -12,7 +12,7 @@ class Salle
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'id_salle')]
+    #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -33,11 +33,8 @@ class Salle
     /**
      * @var Collection<int, Demande>
      */
-    #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'id_salle')]
+    #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'idSalle')]
     private Collection $demandes;
-
-    #[ORM\OneToOne(inversedBy: 'salle', cascade: ['persist', 'remove'])]
-    private ?SystemeAcquisition $SA = null;
 
     public function __construct()
     {
@@ -135,18 +132,6 @@ class Salle
                 $demande->setIdSalle(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getSA(): ?SystemeAcquisition
-    {
-        return $this->SA;
-    }
-
-    public function setSA(?SystemeAcquisition $SA): static
-    {
-        $this->SA = $SA;
 
         return $this;
     }

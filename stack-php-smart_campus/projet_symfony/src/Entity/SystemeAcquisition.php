@@ -13,7 +13,7 @@ class SystemeAcquisition
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id_sa = null;
+    private ?int $id = null;
 
     #[ORM\Column(length: 20)]
     private ?string $statut = null;
@@ -24,7 +24,7 @@ class SystemeAcquisition
     /**
      * @var Collection<int, Demande>
      */
-    #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'id_sa')]
+    #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'idSa')]
     private Collection $demandes;
 
     public function __construct()
@@ -32,9 +32,9 @@ class SystemeAcquisition
         $this->demandes = new ArrayCollection();
     }
 
-    public function getIdSa(): ?int
+    public function getId(): ?int
     {
-        return $this->id_sa;
+        return $this->id;
     }
 
     public function getStatut(): ?string

@@ -10,15 +10,14 @@ use App\Repository\SalleRepository;
 use App\Repository\SystemeAcquisitionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException; // Optionnel, mais bonne pratique
 
 final class InfoSalleController extends AbstractController
 {
     // 1. Mise à jour de la route : Utilisez un nom simple pour le paramètre
-    #[Route('/info-salle/{nomSalle}', name: 'app_info_salle')]
+    #[Route('/info-salle/{nomSalle}', name: 'app_info_salle', methods: ['GET', 'POST'])]
     public function index(
         // 2. Injection directe du paramètre de route (le nom de la salle)
         string $nomSalle,
@@ -30,61 +29,90 @@ final class InfoSalleController extends AbstractController
     {
         // 3. Récupération de la salle en utilisant le paramètre injecté $nomSalle
         $salle = $salleRepository->findOneBy(['nom_salle' => $nomSalle]);
-        $SA = $systemeAcquisitionRepository->findOneBy(['statut' => 'Inactif']);
+        
         if(!$salle){
             // Le createNotFoundException lance une NotFoundHttpException (404)
             throw $this->createNotFoundException('La salle "' . $nomSalle . '" n\'existe pas !');
         }
 
-        // Vérifier s'il y a une demande en attente pour cette salle
-        $demandeEnCours = $manager->getRepository(Demande::class)
-            ->findOneBy(['id_salle' => $salle->getId(), 'statut' => 'En attente']);
+        // Vérifier s'il y a une demande en cours pour cette salle
+        $demandeEnCours = null;
+        foreach ($salle->getDemandes() as $demande) {
+            if ($demande->getStatut() === 'En cours') {
+                $demandeEnCours = $demande;
+                break;
+            }
+        }
 
+        // Traitement des actions POST
         if ($request->isMethod('POST')) {
             $action = $request->request->get('action');
-            
+
             if ($action === 'installer') {
-                // Installation d'un SA
+                // Créer une demande d'installation
+                $saInactif = $systemeAcquisitionRepository->findOneBy(['statut' => 'Inactif']);
+                if ($saInactif) {
+                    $demande = new Demande();
+                    $demande->setTypeDemande('Installation');
+                    $demande->setDateDemande(new \DateTime());
+                    $demande->setStatut('En cours');
+                    $demande->setIdSalle($salle);
+                    $demande->setIdSa($saInactif);
+
+                    $manager->persist($demande);
+                    $manager->flush();
+
+                    $this->addFlash('success', 'Demande d\'installation créée avec succès.');
+                } else {
+                    $this->addFlash('error', 'Aucun système d\'acquisition inactif disponible.');
+                }
+                return $this->redirectToRoute('app_info_salle', ['nomSalle' => $nomSalle]);
+            }
+
+            if ($action === 'desinstaller') {
+                // Créer une demande de désinstallation
                 $demande = new Demande();
-                $demande->setTypeDemande('installation');
+                $demande->setTypeDemande('Désinstallation');
                 $demande->setDateDemande(new \DateTime());
+                $demande->setStatut('En cours');
                 $demande->setIdSalle($salle);
-                $demande->setIdSa($SA);
-                $demande->setStatut('En attente');
+                // Trouver le SA actif associé à cette salle
+                $saActif = $systemeAcquisitionRepository->findOneBy(['statut' => 'Actif']);
+                if ($saActif) {
+                    $demande->setIdSa($saActif);
+                }
+
                 $manager->persist($demande);
                 $manager->flush();
 
-                $this->addFlash('success', 'Demande d\'installation créée !');
+                $this->addFlash('success', 'Demande de désinstallation créée avec succès.');
+                return $this->redirectToRoute('app_info_salle', ['nomSalle' => $nomSalle]);
             }
-            elseif ($action === 'annuler' && $demandeEnCours) {
-                // Annuler la demande
+
+            if ($action === 'annuler' && $demandeEnCours) {
+                // Annuler la demande en cours
                 $manager->remove($demandeEnCours);
                 $manager->flush();
 
-                $this->addFlash('success', 'Demande annulée avec succès !');
+                $this->addFlash('success', 'Demande annulée avec succès.');
+                return $this->redirectToRoute('app_info_salle', ['nomSalle' => $nomSalle]);
             }
-            elseif ($action === 'desinstaller') {
+        }
 
-                // Désinstallation d'un SA
-                $demande = new Demande();
-                $demande->setTypeDemande('desinstallation');
-                $demande->setDateDemande(new \DateTime());
-                $demande->setIdSalle($salle);
-                $demande->setIdSa($salle->getSa());
-                $demande->setStatut('En attente');
-                $manager->persist($demande);
-                $manager->flush();
-
-                $this->addFlash('success', 'Demande de désinstallation créée !');
+        // Vérifier si un SA est installé dans cette salle
+        $saInstalle = null;
+        foreach ($salle->getDemandes() as $demande) {
+            if ($demande->getTypeDemande() === 'Installation' && $demande->getStatut() === 'Terminé') {
+                $saInstalle = $demande->getIdSa();
+                break;
             }
-
-            return $this->redirectToRoute('app_info_salle', ['nomSalle' => $nomSalle]);
         }
 
         return $this->render('info_salle/index.html.twig', [
             'controller_name' => 'InfoSalleController',
             'salle' => $salle,
             'demandeEnCours' => $demandeEnCours,
+            'saInstalle' => $saInstalle,
         ]);
     }
 }

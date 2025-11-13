@@ -40,6 +40,12 @@
             </div>
         {% endfor %}
 
+        {% for message in app.flashes('error') %}
+            <div style="background-color: #f44336; color: white; padding: 15px; border-radius: 5px; margin: 20px;">
+                {{ message }}
+            </div>
+        {% endfor %}
+
         <section class="sectionEdit">
             <p>Modifier les informations de la salle {{ salle.nomSalle }}</p>
             <Button>modifier</Button>
@@ -55,7 +61,7 @@
                     <button type="submit">Annuler la demande</button>
                 </form>
             </section>
-        {% elseif salle.SA is null %}
+        {% elseif saInstalle is null %}
             <section>
                 <p>Aucun SA n'est installé dans la salle {{ salle.nomSalle }}.
                     Pour installer un système d'acquisition, cliquer sur le bouton ci-dessous :</p>
