@@ -1,19 +1,110 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Hello ModifierSalleController!{% endblock %}
-
 {% block body %}
-<style>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fa;
+            text-align: center;
+            padding: 60px;
+        }
 
-</style>
+        h1 {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+        .card {
+            background-color: #98c1d9;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/var/www/html/projet_symfony/src/Controller/ModifierSalleController.php</code></li>
-        <li>Your template at <code>/var/www/html/projet_symfony/templates/modifier_salle/index.html.twig</code></li>
-    </ul>
-</div>
+        label {
+            font-size: 1.1em;
+            display: block;
+            text-align: left;
+            margin: 10px auto 5px;
+            max-width: 500px;
+        }
+
+        input {
+            padding: 10px;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 5px;
+            border: none;
+            background-color: #e0e0e0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 15px 30px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        button:hover {
+            background-color: #43a047;
+        }
+
+        .message {
+            color: green;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+
+    <h1>Modifier la salle {{ salle.nomSalle ?? 'Inconnue' }}</h1>
+
+    <div class="card">
+        <p>Remplissez les informations de la salle à modifier dans la base de données</p>
+
+        {# Formulaire de modification de salle #}
+        <form method="post" action="{{ path('app_modifier_salle', {'nom_salle': salle.nomSalle}) }}" onsubmit="return confirmerModifier();">
+            <label for="nom_salle">Nom de la salle :</label>
+            <input type="text" id="nom_salle" name="nom_salle" value="{{ salle.nomSalle }}" required>
+
+            <label for="etage">Étage :</label>
+            <input type="number" id="etage" name="etage"  value="{{ salle.etage}}" required>
+
+            <label for="nb_fenetres">Nombre de fenêtres :</label>
+            <input type="number" id="nb_fenetres" name="nb_fenetres" value="{{ salle.nbFenetres }}" required>
+
+            <button type="submit">Confirmer les modifications</button>
+        </form>
+
+        {% for message in app.flashes('error') %}
+            <div class="message" style="color: red; font-weight: bold;">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('success') %}
+            <div class="message" style="color: green; font-weight: bold;">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function confirmerModifier() {
+
+            return confirm("Voulez-vous vraiment modifier cette salle ?");
+        }
+    </script>
 {% endblock %}
+
