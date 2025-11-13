@@ -15,8 +15,18 @@ final class AjouterSalleController extends AbstractController
     public function index(Request $request, EntityManagerInterface $em): Response
     {
         if ($request->isMethod('POST')) {
+            $nomSalle = $request->request->get('nom_salle');
+            
+            // Vérifier si une salle avec ce nom existe déjà
+            $salleExistante = $em->getRepository(Salle::class)->findOneBy(['nom_salle' => $nomSalle]);
+            
+            if ($salleExistante) {
+                $this->addFlash('error', 'Une salle nommée "' . $nomSalle . '" existe déjà dans la base de données.');
+                return $this->redirectToRoute('app_ajouter_salle');
+            }
+            
             $salle = new Salle();
-            $salle->setNomSalle($request->request->get('nom_salle'));
+            $salle->setNomSalle($nomSalle);
             $salle->setEtage((int)$request->request->get('etage'));
             $salle->setNbFenetres((int)$request->request->get('nb_fenetres'));
             $salle->setDateCreation(new \DateTime());

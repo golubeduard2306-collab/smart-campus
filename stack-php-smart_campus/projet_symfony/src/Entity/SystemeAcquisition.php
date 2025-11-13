@@ -24,7 +24,7 @@ class SystemeAcquisition
     /**
      * @var Collection<int, Demande>
      */
-    #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'id_sa')]
+    #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'idSa')]
     private Collection $demandes;
 
     public function __construct()

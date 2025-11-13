@@ -63,9 +63,16 @@
         }
 
         .message {
-            color: green;
             font-weight: bold;
             margin-top: 20px;
+        }
+
+        .message.success {
+            color: green;
+        }
+
+        .message.error {
+            color: red;
         }
     </style>
 
@@ -90,7 +97,12 @@
 
         {# Message flash après ajout réussi #}
         {% for message in app.flashes('success') %}
-            <div class="message">{{ message }}</div>
+            <div class="message success">{{ message }}</div>
+        {% endfor %}
+
+        {# Message flash en cas d'erreur #}
+        {% for message in app.flashes('error') %}
+            <div class="message error">{{ message }}</div>
         {% endfor %}
     </div>
 
