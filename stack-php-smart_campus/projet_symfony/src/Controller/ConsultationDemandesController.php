@@ -18,10 +18,10 @@ final class ConsultationDemandesController extends AbstractController
         // Récupérer le filtre depuis la requête (par défaut "tout")
         $filtre = $request->query->get('filtre', 'tout');
         
-        // Récupérer les demandes non archivées (statut != 'archivé')
+        // Récupérer les demandes non archivées (statut != 'Terminé')
         $queryBuilder = $demandeRepository->createQueryBuilder('d')
             ->where('d.statut != :statut')
-            ->setParameter('statut', 'archivé')
+            ->setParameter('statut', 'Terminé')
             ->orderBy('d.date_demande', 'ASC');
         
         // Appliquer le filtre si nécessaire
@@ -47,8 +47,11 @@ final class ConsultationDemandesController extends AbstractController
         $demande = $em->getRepository(Demande::class)->find($id);
         
         if ($demande) {
-            $demande->setStatut('archivé');
+            $demande->setStatut('Terminé');
+            $demande->getIdSa()->setStatut("Actif");
+            $demande->getIdSalle()->setSaId($demande->getIdSa());
             $em->flush();
+
             
             $this->addFlash('success', 'La demande a été archivée avec succès.');
         } else {
