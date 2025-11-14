@@ -2,22 +2,24 @@
 
 {% block title %}Sélectionner une salle{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
+    {{ parent() }}
     <style>
-        body {
+        .page-container {
             font-family: Arial, sans-serif;
             background-color: #f5f7fa;
             text-align: center;
             padding: 60px;
+            min-height: calc(100vh - 60px);
         }
 
-        h1 {
+        .page-container h1 {
             font-size: 2em;
             font-weight: bold;
             margin-bottom: 40px;
         }
 
-        .card {
+        .page-container .card {
             background-color: #8ecae6;
             padding: 40px;
             border-radius: 20px;
@@ -26,17 +28,17 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        h2 {
+        .page-container h2 {
             font-size: 1.4em;
             font-weight: bold;
             margin-bottom: 20px;
         }
 
-        .search-container {
+        .page-container .search-container {
             margin-bottom: 20px;
         }
 
-        input[type="text"] {
+        .page-container input[type="text"] {
             width: 60%;
             padding: 10px;
             border-radius: 5px;
@@ -44,7 +46,7 @@
             font-size: 1em;
         }
 
-        table {
+        .page-container table {
             width: 100%;
             border-collapse: collapse;
             background-color: #d9d9d9;
@@ -52,25 +54,25 @@
             overflow: hidden;
         }
 
-        th, td {
+        .page-container th, .page-container td {
             padding: 10px;
             text-align: center;
         }
 
-        th {
+        .page-container th {
             font-weight: bold;
             border-bottom: 2px solid #666;
         }
 
-        td {
+        .page-container td {
             border-bottom: 1px solid #bbb;
         }
 
-        tr:last-child td {
+        .page-container tr:last-child td {
             border-bottom: none;
         }
 
-        .btn {
+        .page-container .btn {
             background-color: #4caf50;
             color: white;
             border: none;
@@ -80,11 +82,11 @@
             transition: background-color 0.3s;
         }
 
-        .btn:hover {
+        .page-container .btn:hover {
             background-color: #43a047;
         }
 
-        .table-container {
+        .page-container .table-container {
             max-height: 250px;
             overflow-y: auto;
             scrollbar-width: thin;
@@ -92,16 +94,19 @@
             border-radius: 10px;
         }
 
-        .table-container::-webkit-scrollbar {
+        .page-container .table-container::-webkit-scrollbar {
             width: 8px;
         }
 
-        .table-container::-webkit-scrollbar-thumb {
+        .page-container .table-container::-webkit-scrollbar-thumb {
             background-color: #6ba6b6;
             border-radius: 5px;
         }
     </style>
+{% endblock %}
 
+{% block body %}
+<div class="page-container">
     <h1>Sélectionner une salle</h1>
 
     <div class="card">
@@ -124,7 +129,7 @@
                     <tr>
                         <td>{{ salle.nomSalle }}</td>
                         <td>
-                            <form action="{{ path('app_info_salle', {'id': salle.getId()}) }}" method="get">
+                            <form action="{{ path('app_info_salle', {'nomSalle': salle.nomSalle}) }}" method="get">
                                 <button type="submit" class="btn">Page</button>
                             </form>
                         </td>
@@ -138,6 +143,7 @@
             </table>
         </div>
     </div>
+
 
     <script>
         function filterTable() {

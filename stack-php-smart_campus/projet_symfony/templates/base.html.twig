@@ -4,25 +4,84 @@
     <meta charset="UTF-8">
     <title>{% block title %}Bienvenue!{% endblock %}</title>
 
-    {#
+    <style>
+        /* Reset de base pour le body */
+        body {
+            margin: 0;
+            padding: 0;
+        }
 
-    C'est ici que vous insérez les liens vers vos feuilles de style (CSS)
+        /* Style du header - isolation complète */
+        .site-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-family: Arial, sans-serif;
+        }
 
-    et autres balises <meta> communes à tout le site.
+        .site-header .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    #}
+        .site-header .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .site-header .logo a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .site-header .logo a:hover {
+            color: #3498db;
+        }
+
+        .site-header nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .site-header nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .site-header nav ul li a:hover {
+            background-color: #34495e;
+        }
+    </style>
 
     {% block stylesheets %}{% endblock %}
-
-    {#
-
-    Si vous utilisez Webpack Encore pour gérer vos assets (JS/CSS),
-
-    vous utiliserez des fonctions comme encore_entry_link_tags().
-
-    #}
 </head>
 <body>
+
+<header class="site-header">
+    <div class="header-container">
+        <div class="logo">
+            <a href="{{ path('app_page_de_liens') }}">🏫 Smart Campus</a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{{ path('app_page_de_liens') }}">Accueil</a></li>
+                <li><a href="{{ path('app_ajouter_salle') }}">Ajouter Salle</a></li>
+                <li><a href="{{ path('app_supprimer_salle') }}">Supprimer Salle</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
 
 {#
 

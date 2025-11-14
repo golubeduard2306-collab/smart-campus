@@ -2,22 +2,24 @@
 
 {% block title %}Ajouter un nouveau SA{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
+    {{ parent() }}
     <style>
-        body {
+        .page-container {
             font-family: Arial, sans-serif;
             background-color: #f5f7fa;
             text-align: center;
             padding: 60px;
+            min-height: calc(100vh - 60px);
         }
 
-        h1 {
+        .page-container h1 {
             font-size: 2em;
             font-weight: bold;
             margin-bottom: 40px;
         }
 
-        .card {
+        .page-container .card {
             background-color: #98c1d9;
             padding: 40px;
             border-radius: 20px;
@@ -26,12 +28,12 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        p {
+        .page-container p {
             font-size: 1.3em;
             margin-bottom: 40px;
         }
 
-        button {
+        .page-container button {
             background-color: #4caf50;
             color: white;
             border: none;
@@ -44,17 +46,20 @@
             max-width: 600px;
         }
 
-        button:hover {
+        .page-container button:hover {
             background-color: #43a047;
         }
 
-        .message {
+        .page-container .message {
             color: green;
             font-weight: bold;
             margin-top: 20px;
         }
     </style>
+{% endblock %}
 
+{% block body %}
+<div class="page-container">
     <h1>Ajouter un nouveau SA</h1>
 
     <div class="card">
@@ -77,4 +82,5 @@
             return confirm("Voulez-vous vraiment ajouter un nouveau SA ?");
         }
     </script>
+</div>
 {% endblock %}
