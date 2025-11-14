@@ -1,88 +1,159 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Salle ...{% endblock %}
+{% block title %}Salle {{ salle.nomSalle }}{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
+    {{ parent() }}
     <style>
-        .conteneur1{
-            justify-items: center;
-            align-content: center;
-
+        .page-container {
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fa;
+            text-align: center;
+            padding: 60px;
+            min-height: calc(100vh - 60px);
         }
 
-        section{
-            display: flex;
-            flex-direction: column;
-            background-color: rgba(22, 138, 173, 0.5);
-            border-radius: 10px;
-            padding: 20px 50px 20px 50px;
-            margin: 50px;
-            width: 80%;
-            align-items: center;
-
-
+        .page-container h1 {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 40px;
         }
-        button{
-            background-color: rgba(217, 217, 217, 1);
+
+        .page-container .alert {
+            max-width: 800px;
+            margin: 0 auto 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .page-container .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .page-container .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .page-container .card {
+            background-color: #8ecae6;
+            padding: 30px 40px;
+            border-radius: 20px;
+            max-width: 800px;
+            margin: 20px auto;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-container .card p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .page-container .card strong {
+            color: #2c3e50;
+            font-size: 1.2em;
+        }
+
+        .page-container button {
+            background-color: #4caf50;
+            color: white;
             border: none;
             border-radius: 5px;
-            padding: 0.5rem;
-            margin: 1rem;
+            padding: 12px 30px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 10px;
+        }
+
+        .page-container button:hover {
+            background-color: #43a047;
+        }
+
+        .page-container .btn-danger {
+            background-color: #f44336;
+        }
+
+        .page-container .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+
+        .page-container .btn-warning {
+            background-color: #ff9800;
+        }
+
+        .page-container .btn-warning:hover {
+            background-color: #f57c00;
+        }
+
+        .page-container .btn-secondary {
+            background-color: #9e9e9e;
+        }
+
+        .page-container .btn-secondary:hover {
+            background-color: #757575;
+        }
+
+        .page-container form {
+            display: inline-block;
         }
     </style>
+{% endblock %}
 
-    <div class="conteneur1">
-        <h1>Salle {{ salle.nomSalle }}</h1>
+{% block body %}
+<div class="page-container">
+    <h1>Salle {{ salle.nomSalle }}</h1>
 
-        {% for message in app.flashes('success') %}
-            <div style="background-color: #4CAF50; color: white; padding: 15px; border-radius: 5px; margin: 20px;">
-                {{ message }}
-            </div>
-        {% endfor %}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
 
-        {% for message in app.flashes('error') %}
-            <div style="background-color: #f44336; color: white; padding: 15px; border-radius: 5px; margin: 20px;">
-                {{ message }}
-            </div>
-        {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-error">{{ message }}</div>
+    {% endfor %}
 
-        <section class="sectionEdit">
-            <p>Modifier les informations de la salle {{ salle.nomSalle }}</p>
-            <Button>modifier</Button>
-            <p>Vous pouvez supprimer la salle {{ salle.nomSalle }}</p>
-            <button>supprimer</button>
-        </section>
-        {% if demandeEnCours %}
-            <section>
-                <p>Demande {{ demandeEnCours.typeDemande }} en cours pour la salle {{ salle.nomSalle }}.</p>
-                <p>Date de demande : {{ demandeEnCours.dateDemande|date('d/m/Y H:i') }}</p>
-                <form method="POST" action="{{ path('app_info_salle', {'nomSalle': salle.nomSalle}) }}" onsubmit="return confirmerAnnullation();">
-                    <input type="hidden" name="action" value="annuler">
-                    <button type="submit">Annuler la demande</button>
-                </form>
-            </section>
-        {% elseif saInstalle is null %}
-            <section>
-                <p>Aucun SA n'est installé dans la salle {{ salle.nomSalle }}.
-                    Pour installer un système d'acquisition, cliquer sur le bouton ci-dessous :</p>
-                <p><strong>SA disponibles en stock : {{ nbSaDisponibles }}</strong></p>
-                <form method="POST" action="{{ path('app_info_salle', {'nomSalle': salle.nomSalle}) }}" onsubmit="return confirmerInstallation();">
-                    <input type="hidden" name="action" value="installer">
-                    <button type="submit">installer un SA</button>
-                </form>
-            </section>
-        {% else %}
-            <section>
-                <p>Un SA est installé dans la salle {{ salle.nomSalle }}.
-                    Pour désinstaller le système d'acquisition, cliquer sur le bouton ci-dessous :</p>
-                <form method="POST" action="{{ path('app_info_salle', {'nomSalle': salle.nomSalle}) }}" onsubmit="return confirmerDesinstallation();">
-                    <input type="hidden" name="action" value="desinstaller">
-                    <button type="submit">désinstaller le SA</button>
-                </form>
-            </section>
-        {% endif %}
-
+    <div class="card">
+        <p>Modifier les informations de la salle {{ salle.nomSalle }}</p>
+        <button class="btn-secondary">Modifier</button>
+        <p>Vous pouvez supprimer la salle {{ salle.nomSalle }}</p>
+        <button class="btn-danger">Supprimer</button>
     </div>
+
+    {% if demandeEnCours %}
+        <div class="card">
+            <p><strong>Demande {{ demandeEnCours.typeDemande }} en cours</strong></p>
+            <p>Date de demande : {{ demandeEnCours.dateDemande|date('d/m/Y H:i') }}</p>
+            <form method="POST" action="{{ path('app_info_salle', {'nomSalle': salle.nomSalle}) }}" onsubmit="return confirmerAnnullation();">
+                <input type="hidden" name="action" value="annuler">
+                <button type="submit" class="btn-warning">Annuler la demande</button>
+            </form>
+        </div>
+    {% elseif saInstalle is null %}
+        <div class="card">
+            <p>Aucun SA n'est installé dans la salle {{ salle.nomSalle }}.</p>
+            <p>Pour installer un système d'acquisition, cliquer sur le bouton ci-dessous :</p>
+            <p><strong>SA disponibles en stock : {{ nbSaDisponibles }}</strong></p>
+            <form method="POST" action="{{ path('app_info_salle', {'nomSalle': salle.nomSalle}) }}" onsubmit="return confirmerInstallation();">
+                <input type="hidden" name="action" value="installer">
+                <button type="submit">Installer un SA</button>
+            </form>
+        </div>
+    {% else %}
+        <div class="card">
+            <p>Un SA est installé dans la salle {{ salle.nomSalle }}.</p>
+            <p>Pour désinstaller le système d'acquisition, cliquer sur le bouton ci-dessous :</p>
+            <form method="POST" action="{{ path('app_info_salle', {'nomSalle': salle.nomSalle}) }}" onsubmit="return confirmerDesinstallation();">
+                <input type="hidden" name="action" value="desinstaller">
+                <button type="submit" class="btn-danger">Désinstaller le SA</button>
+            </form>
+        </div>
+    {% endif %}
+
     <script>
         function confirmerInstallation() {
             return confirm("Voulez-vous vraiment faire une demande d'installation ?");
@@ -94,4 +165,5 @@
             return confirm("Voulez-vous vraiment faire une demande de désinstallation ?");
         }
     </script>
+</div>
 {% endblock %}
