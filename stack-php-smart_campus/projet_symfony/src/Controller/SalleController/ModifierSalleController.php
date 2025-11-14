@@ -22,9 +22,22 @@ final class ModifierSalleController extends AbstractController
 
 
         if ($request->isMethod('POST')) {
-            $nouveauNom = $request->request->get('nom_salle');
+            $nouveauNom = strtoupper($request->request->get('nom_salle'));
+
+            $etage = (int)$request->request->get('etage');
 
             $salleExistante = $em->getRepository(Salle::class)->findOneBy(['nom_salle' => $nouveauNom]);
+
+            if (!preg_match('/^[DC]' . $etage . '\d{2}$/', $nouveauNom)) {
+                $this->addFlash('error',
+                    'Le nom de la salle doit commencer par D ou C, 
+                    être suivi de l\'étage (' . $etage . '), 
+                    puis de deux chiffres. Exemple : D' . $etage . '01'
+                );
+                return $this->render('modifier_salle/index.html.twig', [
+                    'salle' => $salle,
+                ]);
+            }
 
             if ($salleExistante && $salleExistante->getId() !== $salle->getId()) {
                 $this->addFlash('error', 'Ce nom de salle est déjà utilisé !');
