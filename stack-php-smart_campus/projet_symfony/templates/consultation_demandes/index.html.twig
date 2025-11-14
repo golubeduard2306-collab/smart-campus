@@ -2,6 +2,171 @@
 
 {% block title %}Consultation demandes{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .page-container {
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fa;
+            text-align: center;
+            padding: 60px;
+            min-height: calc(100vh - 60px);
+        }
+
+        .page-container h1 {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
+
+        .page-container .alert {
+            max-width: 800px;
+            margin: 0 auto 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .page-container .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .page-container .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .page-container .card {
+            background-color: #8ecae6;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-container .filter-container {
+            margin-bottom: 20px;
+            text-align: left;
+            background-color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .page-container .filter-container label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .page-container .filter-list {
+            list-style: none;
+            display: inline-flex;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page-container .filter-list li a {
+            text-decoration: none;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .page-container .filter-list li a:hover {
+            background-color: #e0e0e0;
+        }
+
+        .page-container .filter-list li a.active {
+            background-color: #4caf50;
+            color: white;
+            font-weight: bold;
+        }
+
+        .page-container .search-container {
+            margin-bottom: 20px;
+        }
+
+        .page-container input[type="text"] {
+            width: 60%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+        }
+
+        .page-container table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #d9d9d9;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .page-container th, .page-container td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .page-container th {
+            font-weight: bold;
+            border-bottom: 2px solid #666;
+        }
+
+        .page-container td {
+            border-bottom: 1px solid #bbb;
+        }
+
+        .page-container tr:last-child td {
+            border-bottom: none;
+        }
+
+        .page-container .btn {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .page-container .btn:hover {
+            background-color: #43a047;
+        }
+
+        .page-container .btn-confirmer {
+            background-color: #4caf50;
+        }
+
+        .page-container .btn-confirmer:hover {
+            background-color: #388e3c;
+        }
+
+        .page-container .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #6ba6b6 #b5d5e0;
+            border-radius: 10px;
+        }
+
+        .page-container .table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .page-container .table-container::-webkit-scrollbar-thumb {
+            background-color: #6ba6b6;
+            border-radius: 5px;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
 <div class="page-container">
     <h1>Consultation demandes</h1>
