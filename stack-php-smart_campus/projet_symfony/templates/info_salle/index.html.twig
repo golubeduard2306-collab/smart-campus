@@ -48,7 +48,9 @@
 
         <section class="sectionEdit">
             <p>Modifier les informations de la salle {{ salle.nomSalle }}</p>
-            <Button>modifier</Button>
+            <a href="{{ path('app_modifier_salle', {'nom_salle': salle.nomSalle}) }}">
+                <button>modifier</button>
+            </a>
             <p>Vous pouvez supprimer la salle {{ salle.nomSalle }}</p>
             <button>supprimer</button>
         </section>

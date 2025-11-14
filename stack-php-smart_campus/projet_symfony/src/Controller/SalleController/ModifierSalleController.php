@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 final class ModifierSalleController extends AbstractController
 {
-    #[Route('/{nom_salle}/modifier-salle', name: 'app_modifier_salle')]
+    #[Route('/modifier-salle/{nom_salle}', name: 'app_modifier_salle')]
     public function modifier(string $nom_salle, Request $request, EntityManagerInterface $em): Response
     {
         $salle = $em->getRepository(Salle::class)->findOneBy(['nom_salle' => $nom_salle]);
