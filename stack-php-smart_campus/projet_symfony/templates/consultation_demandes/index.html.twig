@@ -1,42 +1,57 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ConsultationDemandesController!{% endblock %}
+{% block title %}Consultation demandes{% endblock %}
 
 {% block body %}
 <div class="page-container">
-    <h1>Consulter les demandes</h1>
+    <h1>Consultation demandes</h1>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-error">{{ message }}</div>
+    {% endfor %}
 
     <div class="card">
-        <h2>Demandes</h2>
+        <div class="filter-container">
+            <label>Filtre :</label>
+            <ul class="filter-list">
+                <li><a href="{{ path('app_consultation_demandes', {'filtre': 'tout'}) }}" class="{{ filtre == 'tout' ? 'active' : '' }}">• tout</a></li>
+                <li><a href="{{ path('app_consultation_demandes', {'filtre': 'installation'}) }}" class="{{ filtre == 'installation' ? 'active' : '' }}">• installation</a></li>
+                <li><a href="{{ path('app_consultation_demandes', {'filtre': 'désinstallation'}) }}" class="{{ filtre == 'désinstallation' ? 'active' : '' }}">• désinstallation</a></li>
+            </ul>
+        </div>
 
         <div class="search-container">
-            <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Rechercher une salle (ex: D005)">
+            <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Rechercher avec le nom de la salle (ex: D004)">
         </div>
 
         <div class="table-container">
-            <table id="sallesTable">
+            <table id="demandesTable">
                 <thead>
                 <tr>
                     <th>Salle</th>
-                    <th>Type</th>
-                    <th>Date</th>
-                    <th>Commentaire</th>
-                    <th>Confirmer</th>
+                    <th>type</th>
+                    <th>date</th>
+                    <th>confirmer</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for salle in salles %}
+                {% for demande in demandes %}
                     <tr>
-                        <td>{{ salle.nomSalle }}</td>
+                        <td>{{ demande.idSalle.nomSalle }}</td>
+                        <td>{{ demande.typeDemande|capitalize }}</td>
+                        <td>{{ demande.dateDemande|date('d/m/y') }}</td>
                         <td>
-                            <form action="{{ path('app_info_salle', {'nomSalle': salle.nomSalle}) }}" method="get">
-                                <button type="submit" class="btn">Page</button>
+                            <form action="{{ path('app_archiver_demande', {'id': demande.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir archiver cette demande ?');">
+                                <button type="submit" class="btn btn-confirmer">confirmer</button>
                             </form>
                         </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="2">Aucune salle trouvée.</td>
+                        <td colspan="4">Aucune demande trouvée.</td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -44,26 +59,25 @@
         </div>
     </div>
 
-
     <script>
         function filterTable() {
             const input = document.getElementById('searchInput');
-            const filter = input.value.toLowerCase();
-            const table = document.getElementById('sallesTable');
-            const rows = table.getElementsByTagName('tr');
+            const filter = input.value.toUpperCase();
+            const table = document.getElementById('demandesTable');
+            const tr = table.getElementsByTagName('tr');
 
-            // Parcourir toutes les lignes du tableau (sauf l’en-tête)
-            for (let i = 1; i < rows.length; i++) {
-                const cell = rows[i].getElementsByTagName('td')[0]; // Première colonne : nom de salle
-                if (cell) {
-                    const textValue = cell.textContent || cell.innerText;
-                    if (textValue.toLowerCase().includes(filter)) {
-                        rows[i].style.display = '';
+            for (let i = 1; i < tr.length; i++) {
+                const td = tr[i].getElementsByTagName('td')[0]; // Colonne Salle
+                if (td) {
+                    const txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = '';
                     } else {
-                        rows[i].style.display = 'none';
+                        tr[i].style.display = 'none';
                     }
                 }
             }
         }
     </script>
-    {% endblock %}
+</div>
+{% endblock %}
