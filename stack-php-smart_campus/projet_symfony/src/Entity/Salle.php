@@ -36,6 +36,9 @@ class Salle
     #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'idSalle')]
     private Collection $demandes;
 
+    #[ORM\OneToOne(inversedBy: 'salle', cascade: ['persist', 'remove'])]
+    private ?SystemeAcquisition $sa = null;
+
     public function __construct()
     {
         $this->demandes = new ArrayCollection();
@@ -132,6 +135,18 @@ class Salle
                 $demande->setIdSalle(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSaId(): ?SystemeAcquisition
+    {
+        return $this->sa;
+    }
+
+    public function setSaId(?SystemeAcquisition $sa): static
+    {
+        $this->sa = $sa;
 
         return $this;
     }
