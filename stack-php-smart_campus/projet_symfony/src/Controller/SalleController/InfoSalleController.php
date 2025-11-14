@@ -108,11 +108,15 @@ final class InfoSalleController extends AbstractController
             }
         }
 
+        // Compter le nombre de SA disponibles (statut "Inactif")
+        $nbSaDisponibles = $systemeAcquisitionRepository->count(['statut' => 'Inactif']);
+
         return $this->render('info_salle/index.html.twig', [
             'controller_name' => 'InfoSalleController',
             'salle' => $salle,
             'demandeEnCours' => $demandeEnCours,
             'saInstalle' => $saInstalle,
+            'nbSaDisponibles' => $nbSaDisponibles,
         ]);
     }
 }

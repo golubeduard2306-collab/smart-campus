@@ -65,6 +65,7 @@
             <section>
                 <p>Aucun SA n'est installé dans la salle {{ salle.nomSalle }}.
                     Pour installer un système d'acquisition, cliquer sur le bouton ci-dessous :</p>
+                <p><strong>SA disponibles en stock : {{ nbSaDisponibles }}</strong></p>
                 <form method="POST" action="{{ path('app_info_salle', {'nomSalle': salle.nomSalle}) }}" onsubmit="return confirmerInstallation();">
                     <input type="hidden" name="action" value="installer">
                     <button type="submit">installer un SA</button>
