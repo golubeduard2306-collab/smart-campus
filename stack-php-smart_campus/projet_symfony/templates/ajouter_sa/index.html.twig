@@ -55,6 +55,32 @@
             font-weight: bold;
             margin-top: 20px;
         }
+
+        .page-container .error-message {
+            color: #d32f2f;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .page-container .form-group {
+            margin-bottom: 30px;
+        }
+
+        .page-container label {
+            display: block;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .page-container input[type="number"] {
+            width: 200px;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
     </style>
 {% endblock %}
 
@@ -63,23 +89,34 @@
     <h1>Ajouter un nouveau SA</h1>
 
     <div class="card">
-        <p>Ajouter un nouveau SA dans la base de données</p>
+        <p>Ajouter un ou plusieurs SA dans la base de données</p>
 
         {# Formulaire qui envoie une requête POST au contrôleur #}
         <form method="post" action="{{ path('app_ajouter_sa') }}" onsubmit="return confirmerAjout();">
-            <button type="submit">Ajouter un SA</button>
+            <div class="form-group">
+                <label for="quantite">Quantité de SA à ajouter :</label>
+                <input type="number" id="quantite" name="quantite" value="1" min="1" max="100" required>
+            </div>
+            
+            <button type="submit">Ajouter SA</button>
         </form>
 
-        {# Message de confirmation #}
+        {# Messages de confirmation ou d'erreur #}
         {% for message in app.flashes('success') %}
             <div class="message">{{ message }}</div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="error-message">{{ message }}</div>
         {% endfor %}
     </div>
 
     <script>
         function confirmerAjout() {
-            // Affiche une boîte de confirmation
-            return confirm("Voulez-vous vraiment ajouter un nouveau SA ?");
+            const quantite = document.getElementById('quantite').value;
+            const message = quantite > 1 
+                ? `Voulez-vous vraiment ajouter ${quantite} nouveaux SA ?`
+                : "Voulez-vous vraiment ajouter un nouveau SA ?";
+            return confirm(message);
         }
     </script>
 </div>

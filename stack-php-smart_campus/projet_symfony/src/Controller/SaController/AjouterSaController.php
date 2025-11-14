@@ -15,16 +15,33 @@ class AjouterSaController extends AbstractController
     public function index(Request $request, EntityManagerInterface $em): Response
     {
         if ($request->isMethod('POST')) {
-            $sa = new SystemeAcquisition();
+            // Récupérer la quantité depuis le formulaire (par défaut 1)
+            $quantite = (int) $request->request->get('quantite', 1);
+            
+            // Vérifier que la quantité est valide
+            if ($quantite < 1 || $quantite > 100) {
+                $this->addFlash('error', 'La quantité doit être entre 1 et 100.');
+                return $this->redirectToRoute('app_ajouter_sa');
+            }
+            
+            // Créer le nombre de SA demandé
+            for ($i = 0; $i < $quantite; $i++) {
+                $sa = new SystemeAcquisition();
 
-            // Remplir les champs obligatoires
-            $sa->setDateCreation(new \DateTime());
-            $sa->setStatut('Inactif'); // ou autre valeur par défaut
+                // Remplir les champs obligatoires
+                $sa->setDateCreation(new \DateTime());
+                $sa->setStatut('Inactif'); // ou autre valeur par défaut
 
-            $em->persist($sa);
+                $em->persist($sa);
+            }
+            
             $em->flush();
 
-            $this->addFlash('success', 'Un nouveau SA a été ajouté à la base de données.');
+            $message = $quantite > 1 
+                ? "$quantite nouveaux SA ont été ajoutés à la base de données."
+                : 'Un nouveau SA a été ajouté à la base de données.';
+            
+            $this->addFlash('success', $message);
 
             return $this->redirectToRoute('app_ajouter_sa');
         }
