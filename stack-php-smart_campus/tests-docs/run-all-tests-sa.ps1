@@ -26,7 +26,7 @@ Write-Host ""
 
 # Tests Supprimer SA
 Write-Host "================================================" -ForegroundColor Green
-Write-Host "   2/2 - Tests SupprimerSaController" -ForegroundColor Green
+Write-Host "   2/3 - Tests SupprimerSaController" -ForegroundColor Green
 Write-Host "================================================" -ForegroundColor Green
 Write-Host ""
 
@@ -35,14 +35,26 @@ docker exec -it -w /var/www/html/projet_symfony smart_campus_php php bin/phpunit
 Write-Host ""
 Write-Host ""
 
+# Tests Supprimer Salle
+Write-Host "================================================" -ForegroundColor Green
+Write-Host "   3/3 - Tests SupprimerSalleController" -ForegroundColor Green
+Write-Host "================================================" -ForegroundColor Green
+Write-Host ""
+
+docker exec -it -w /var/www/html/projet_symfony smart_campus_php php bin/phpunit tests/Controller/SalleController/SupprimerSalleControllerTest.php --testdox
+
+Write-Host ""
+Write-Host ""
+
 # Résumé global
 Write-Host "================================================" -ForegroundColor Cyan
-Write-Host "   RÉSUMÉ - Tests SA complets" -ForegroundColor Cyan
+Write-Host "   RÉSUMÉ - Tous les tests" -ForegroundColor Cyan
 Write-Host "================================================" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "✔ Tests AjouterSaController    : 8 tests passés" -ForegroundColor Green
-Write-Host "✔ Tests SupprimerSaController  : 9 tests passés" -ForegroundColor Green
-Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
-Write-Host "  TOTAL                        : 17 tests passés" -ForegroundColor White -BackgroundColor Green
+Write-Host "✔ Tests AjouterSaController       : 8 tests passés" -ForegroundColor Green
+Write-Host "✔ Tests SupprimerSaController     : 9 tests passés" -ForegroundColor Green
+Write-Host "✔ Tests SupprimerSalleController  : 10 tests passés" -ForegroundColor Green
+Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
+Write-Host "  TOTAL                          : 27 tests passés" -ForegroundColor White -BackgroundColor Green
 Write-Host ""
-Write-Host "🎉 Tous les tests SA sont réussis!" -ForegroundColor Green
+Write-Host "🎉 Tous les tests sont réussis!" -ForegroundColor Green
