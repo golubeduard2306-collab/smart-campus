@@ -3,8 +3,8 @@
 Write-Host "=== Exécution des tests pour AjouterSaController ===" -ForegroundColor Green
 Write-Host ""
 
-# Se positionner dans le répertoire du projet
-Set-Location "c:\Users\KoX\smart-campus\stack-php-smart_campus"
+# Se positionner dans le répertoire du projet (remonter d'un niveau depuis tests-docs)
+Set-Location (Split-Path $PSScriptRoot -Parent)
 
 # Vérifier que les conteneurs Docker sont en cours d'exécution
 Write-Host "Vérification des conteneurs Docker..." -ForegroundColor Cyan
