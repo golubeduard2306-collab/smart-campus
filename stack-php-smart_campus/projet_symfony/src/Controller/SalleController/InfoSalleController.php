@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Controller\SalleController;
 
 use App\Entity\Demande;
@@ -16,10 +15,8 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class InfoSalleController extends AbstractController
 {
-    // 1. Mise à jour de la route : Utilisez un nom simple pour le paramètre
     #[Route('/info-salle/{nomSalle}', name: 'app_info_salle', methods: ['GET', 'POST'])]
     public function index(
-        // 2. Injection directe du paramètre de route (le nom de la salle)
         string $nomSalle,
         SalleRepository $salleRepository,
         SystemeAcquisitionRepository $systemeAcquisitionRepository,
@@ -27,11 +24,10 @@ final class InfoSalleController extends AbstractController
         EntityManagerInterface $manager
     ): Response
     {
-        // 3. Récupération de la salle en utilisant le paramètre injecté $nomSalle
+        // Récupération de la salle
         $salle = $salleRepository->findOneBy(['nom_salle' => $nomSalle]);
         
-        if(!$salle){
-            // Le createNotFoundException lance une NotFoundHttpException (404)
+        if (!$salle) {
             throw $this->createNotFoundException('La salle "' . $nomSalle . '" n\'existe pas !');
         }
 
@@ -48,39 +44,67 @@ final class InfoSalleController extends AbstractController
         if ($request->isMethod('POST')) {
             $action = $request->request->get('action');
 
-            if ($action === 'installer') {
-                // Créer une demande d'installation
-                $saInactif = $systemeAcquisitionRepository->findOneBy(['statut' => 'Inactif']);
-                if ($saInactif) {
-                    $demande = new Demande();
-                    $demande->setTypeDemande('Installation');
-                    $demande->setDateDemande(new \DateTime());
-                    $demande->setStatut('En cours');
-                    $demande->setIdSalle($salle);
-                    $demande->setIdSa($saInactif);
-
-                    $manager->persist($demande);
-                    $manager->flush();
-
-                    $this->addFlash('success', 'Demande d\'installation créée avec succès.');
-                } else {
-                    $this->addFlash('error', 'Aucun système d\'acquisition inactif disponible.');
-                }
+            // Annuler une demande en cours
+            if ($action === 'annuler' && $demandeEnCours) {
+                $manager->remove($demandeEnCours);
+                $manager->flush();
+                
+                $this->addFlash('success', 'Demande annulée avec succès.');
                 return $this->redirectToRoute('app_info_salle', ['nomSalle' => $nomSalle]);
             }
 
+            // Si une demande est déjà en cours, on ne peut pas en créer une nouvelle
+            if ($demandeEnCours) {
+                $this->addFlash('error', 'Une demande est déjà en cours pour cette salle.');
+                return $this->redirectToRoute('app_info_salle', ['nomSalle' => $nomSalle]);
+            }
+
+            // Créer une demande d'installation
+            if ($action === 'installer') {
+                // Vérifier qu'aucun SA n'est déjà installé
+                if ($salle->getSaId() !== null) {
+                    $this->addFlash('error', 'Un système d\'acquisition est déjà installé dans cette salle.');
+                    return $this->redirectToRoute('app_info_salle', ['nomSalle' => $nomSalle]);
+                }
+
+                // Chercher un SA inactif disponible
+                $saInactif = $systemeAcquisitionRepository->findOneBy(['statut' => 'Inactif']);
+                
+                if (!$saInactif) {
+                    $this->addFlash('error', 'Aucun système d\'acquisition inactif disponible.');
+                    return $this->redirectToRoute('app_info_salle', ['nomSalle' => $nomSalle]);
+                }
+
+                $demande = new Demande();
+                $demande->setTypeDemande('Installation');
+                $demande->setDateDemande(new \DateTime());
+                $demande->setStatut('En cours');
+                $demande->setIdSalle($salle);
+                $demande->setIdSa($saInactif);
+
+                $manager->persist($demande);
+                $manager->flush();
+
+                $this->addFlash('success', 'Demande d\'installation créée avec succès.');
+                return $this->redirectToRoute('app_info_salle', ['nomSalle' => $nomSalle]);
+            }
+
+            // Créer une demande de désinstallation
             if ($action === 'desinstaller') {
-                // Créer une demande de désinstallation
+                // Vérifier qu'un SA est bien installé
+                $saInstalle = $salle->getSaId();
+                
+                if ($saInstalle === null) {
+                    $this->addFlash('error', 'Aucun système d\'acquisition n\'est installé dans cette salle.');
+                    return $this->redirectToRoute('app_info_salle', ['nomSalle' => $nomSalle]);
+                }
+
                 $demande = new Demande();
                 $demande->setTypeDemande('Désinstallation');
                 $demande->setDateDemande(new \DateTime());
                 $demande->setStatut('En cours');
                 $demande->setIdSalle($salle);
-                // Trouver le SA actif associé à cette salle
-                $saActif = $systemeAcquisitionRepository->findOneBy(['statut' => 'Actif']);
-                if ($saActif) {
-                    $demande->setIdSa($saActif);
-                }
+                $demande->setIdSa($saInstalle);
 
                 $manager->persist($demande);
                 $manager->flush();
@@ -88,24 +112,13 @@ final class InfoSalleController extends AbstractController
                 $this->addFlash('success', 'Demande de désinstallation créée avec succès.');
                 return $this->redirectToRoute('app_info_salle', ['nomSalle' => $nomSalle]);
             }
-
-            if ($action === 'annuler' && $demandeEnCours) {
-                // Annuler la demande en cours
-                $manager->remove($demandeEnCours);
-                $manager->flush();
-
-                $this->addFlash('success', 'Demande annulée avec succès.');
-                return $this->redirectToRoute('app_info_salle', ['nomSalle' => $nomSalle]);
-            }
         }
 
-        // Vérifier si un SA est installé dans cette salle
+        // Déterminer si un SA est installé en se basant sur la relation directe Salle->sa
+        // ET vérifier son statut (un SA est considéré installé s'il est Actif)
         $saInstalle = null;
-        foreach ($salle->getDemandes() as $demande) {
-            if ($demande->getTypeDemande() === 'Installation' && $demande->getStatut() === 'Terminé') {
-                $saInstalle = $demande->getIdSa();
-                break;
-            }
+        if ($salle->getSaId() !== null && $salle->getSaId()->getStatut() === 'Actif') {
+            $saInstalle = $salle->getSaId();
         }
 
         // Compter le nombre de SA disponibles (statut "Inactif")
