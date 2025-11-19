@@ -119,9 +119,9 @@
 
     <div class="card">
         <p>Modifier les informations de la salle {{ salle.nomSalle }}</p>
-        <button class="btn-secondary">Modifier</button>
+        <button onclick="window.location.href='../modifier-salle/{{salle.nomSalle}}';" class="btn-secondary">Modifier</button>
         <p>Vous pouvez supprimer la salle {{ salle.nomSalle }}</p>
-        <button class="btn-danger">Supprimer</button>
+        <button onclick="window.location.href='../modifier-salle/{salle.nomSalle}';" class="btn-danger">Supprimer</button>
     </div>
 
     {% if demandeEnCours %}
