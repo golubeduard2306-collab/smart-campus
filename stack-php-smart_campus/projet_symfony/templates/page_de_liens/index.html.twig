@@ -1,13 +1,284 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello PageDeLiensController!{% endblock %}
+{% block title %}Smart Campus - Accueil{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .page-container {
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fa;
+            padding: 60px 20px;
+            min-height: calc(100vh - 60px);
+        }
+
+        .page-container .hero {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .page-container .hero h1 {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .page-container .hero p {
+            font-size: 1.3em;
+            color: #555;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .page-container .guide-section {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-container .guide-intro {
+            background-color: #8ecae6;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-container .guide-intro h2 {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .page-container .guide-intro p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .page-container .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .page-container .feature-card {
+            background-color: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .page-container .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .page-container .feature-card h3 {
+            font-size: 1.4em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-container .feature-card .icon {
+            font-size: 1.5em;
+        }
+
+        .page-container .feature-card p {
+            font-size: 1em;
+            line-height: 1.5;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .page-container .feature-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .page-container .feature-card ul li {
+            padding: 8px 0;
+            color: #666;
+            border-bottom: 1px solid #eee;
+        }
+
+        .page-container .feature-card ul li:last-child {
+            border-bottom: none;
+        }
+
+        .page-container .feature-card ul li::before {
+            content: "✓ ";
+            color: #4caf50;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .page-container .workflow-section {
+            background-color: #98c1d9;
+            padding: 40px;
+            border-radius: 15px;
+            margin-top: 40px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-container .workflow-section h2 {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .page-container .workflow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .page-container .workflow-step {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: start;
+            gap: 20px;
+        }
+
+        .page-container .workflow-step .step-number {
+            background-color: #4caf50;
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .page-container .workflow-step .step-content h4 {
+            font-size: 1.2em;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .page-container .workflow-step .step-content p {
+            font-size: 1em;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .page-container .hero h1 {
+                font-size: 2em;
+            }
+
+            .page-container .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
+<div class="page-container">
+    <div class="hero">
+        <h1>Bienvenue sur Smart Campus</h1>
+        <p>Plateforme de gestion des systèmes d'acquisition et des salles pour votre campus intelligent</p>
+    </div>
 
+    <div class="guide-section">
+        <div class="guide-intro">
+            <h2>Page de présentation</h2>
+            <p>
+                <strong>Note :</strong> Cette page ne fait pas partie de la release finale du projet. Elle sert uniquement à présenter 
+                et résumer les fonctionnalités actuellement implémentées dans cette première version de Smart Campus.
+            </p>
+            <p style="margin-top: 15px;">
+                Smart Campus est une application de gestion qui permet de suivre et d'administrer les systèmes d'acquisition (SA) 
+                déployés dans les différentes salles du campus. Vous pouvez créer des demandes d'installation ou de désinstallation, 
+                gérer l'inventaire des équipements, et suivre l'état de chaque salle.
+            </p>
+        </div>
 
-<h1>Page d'accueil temporaire</h1>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>Gestion des Systèmes d'Acquisition</h3>
+                <p>Gérez l'inventaire complet de vos SA :</p>
+                <ul>
+                    <li>Ajouter de nouveaux SA au stock</li>
+                    <li>Consulter le nombre de SA disponibles</li>
+                    <li>Supprimer les SA inactifs uniquement</li>
+                    <li>Suivre le statut (Actif/Inactif)</li>
+                </ul>
+            </div>
 
-<p>
-    Cette page est purement temporaire. Elle permet de préparer les redirections du header pour son utilisation future dans la prochaine release.
-</p>
+            <div class="feature-card">
+                <h3>Gestion des Salles</h3>
+                <p>Administrez les salles du campus :</p>
+                <ul>
+                    <li>Créer de nouvelles salles</li>
+                    <li>Modifier les informations d'une salle</li>
+                    <li>Consulter les détails (étage, fenêtres, SA installé)</li>
+                    <li>Supprimer les salles sans SA</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <h3>Demandes d'Installation/Désinstallation</h3>
+                <p>Créez et suivez les demandes :</p>
+                <ul>
+                    <li>Demander l'installation d'un SA dans une salle</li>
+                    <li>Demander la désinstallation d'un SA</li>
+                    <li>Annuler une demande en cours</li>
+                    <li>Consulter et confirmer les demandes</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="workflow-section">
+            <h2>Workflow type : Installation d'un SA</h2>
+            <div class="workflow-steps">
+                <div class="workflow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Créer des SA</h4>
+                        <p>Ajoutez un ou plusieurs systèmes d'acquisition au stock via la page "Ajouter un SA". Ils sont créés avec le statut "Inactif".</p>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Créer une salle</h4>
+                        <p>Si la salle n'existe pas encore, créez-la via "Ajouter une salle" en renseignant le nom, l'étage et le nombre de fenêtres.</p>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Faire une demande d'installation</h4>
+                        <p>Sélectionnez la salle, puis cliquez sur "Demander une installation". Le système choisit automatiquement un SA disponible et le passe en statut "Actif".</p>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Confirmer la demande</h4>
+                        <p>Allez dans "Consultation des demandes" et confirmez l'installation. Le SA est alors définitivement assigné à la salle.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
