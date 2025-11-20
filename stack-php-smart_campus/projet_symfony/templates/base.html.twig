@@ -15,7 +15,7 @@
         .site-header {
             background-color: #2c3e50;
             color: white;
-            padding: 15px 30px;
+            padding: 12px 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             font-family: Arial, sans-serif;
         }
@@ -26,12 +26,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 20px;
         }
 
         .site-header .logo {
-            font-size: 1.5em;
+            font-size: 1.25rem;
             font-weight: bold;
             margin: 0;
+            flex: 0 0 auto;
         }
 
         .site-header .logo a {
@@ -43,24 +45,107 @@
             color: #3498db;
         }
 
-        .site-header nav ul {
+        /* Image logo sizing */
+        .site-header .logo img.site-logo {
+            height: 75px; /* augmenté */
+            width: auto;
+            max-width: 220px;
+            display: block;
+        }
+
+        @media (max-width: 640px) {
+            .site-header .logo img.site-logo {
+                height: 42px; /* réduit sur petits écrans */
+            }
+        }
+
+        /* Nav principal: utilise flexbox et gère l'overflow */
+        .site-header nav {
+            flex: 1 1 auto;
+            min-width: 0; /* permet aux enfants de s'overflow correctement */
+        }
+
+        .nav-list {
             list-style: none;
             display: flex;
-            gap: 20px;
+            gap: 12px;
             margin: 0;
             padding: 0;
+            align-items: center;
+            flex-wrap: nowrap; /* on empêche le wrap pour activer le overflow */
+            overflow: hidden;
         }
 
-        .site-header nav ul li a {
+        .nav-item {
+            flex: 0 0 auto;
+        }
+
+        .nav-item a {
             color: white;
             text-decoration: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: inline-block;
+            transition: background-color 0.15s;
+            white-space: nowrap;
         }
 
-        .site-header nav ul li a:hover {
+        .nav-item a:hover {
             background-color: #34495e;
+        }
+
+        /* Bouton "Plus" s'affiche quand des items sont masqués */
+        .more-container {
+            position: relative;
+        }
+
+        .more-button {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.08);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: none; /* visible via JS lorsqu'il y a overflow */
+        }
+
+        .more-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: #2c3e50;
+            border: 1px solid rgba(0,0,0,0.2);
+            padding: 6px 8px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 50;
+            min-width: 160px;
+        }
+
+        .more-menu a {
+            display: block;
+            padding: 6px 8px;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .more-menu a:hover {
+            background: #34495e;
+        }
+
+        /* Responsive : sur écrans très petits, permettre scroll horizontal */
+        @media (max-width: 640px) {
+            .nav-list {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                gap: 8px;
+            }
+
+            .more-button {
+                display: none; /* on préfère le scroll horizontal sur tel */
+            }
         }
     </style>
 
@@ -71,12 +156,23 @@
 <header class="site-header">
     <div class="header-container">
         <div class="logo">
-            <a href="{{ path('app_page_de_liens') }}">🏫 Smart Campus</a>
+            <a href="{{ path('app_page_de_liens') }}">
+                <img src="/img/logo_smart_campus.png" alt="Smart Campus" class="site-logo">
+            </a>
         </div>
         <nav>
-            <ul>
-                <li><a href="{{ path('app_page_de_liens') }}">Accueil</a></li>
-                <li><a href="{{ path('app_ajouter_salle') }}">Ajouter Salle</a></li>
+            <ul class="nav-list" id="mainNavList">
+                <li class="nav-item"><a href="{{ path('app_page_de_liens') }}">Accueil</a></li>
+                <li class="nav-item"><a href="{{ path('app_ajouter_sa') }}">Ajouter un SA</a></li>
+                <li class="nav-item"><a href="{{ path('app_supprimer_sa') }}">Supprimer un SA</a></li>
+                <li class="nav-item"><a href="{{ path('app_ajouter_salle') }}">Ajouter une salle</a> </li>
+                <li class="nav-item"><a href="{{ path('app_selectionner_salle') }}">Selectionner une salle</a></li>
+                <li class="nav-item"><a href="{{ path('app_consultation_demandes') }}">Consultation des demandes</a> </li>
+                <!-- ajoutez d'autres liens ici -->
+                <li class="nav-item more-container" id="moreContainer">
+                    <button class="more-button" id="moreButton" aria-expanded="false" aria-haspopup="true">Plus ▾</button>
+                    <div class="more-menu" id="moreMenu" role="menu"></div>
+                </li>
             </ul>
         </nav>
     </div>
