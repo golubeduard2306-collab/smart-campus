@@ -3,6 +3,7 @@
 namespace App\Tests\Controller\SaController;
 
 use App\Entity\SystemeAcquisition;
+use App\Entity\Salle;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -24,9 +25,6 @@ class SupprimerSaControllerTest extends WebTestCase
         $this->entityManager = null;
     }
 
-    /**
-     * Méthode helper pour créer un SA dans la base de données
-     */
     private function createSa(): SystemeAcquisition
     {
         $sa = new SystemeAcquisition();
@@ -39,9 +37,20 @@ class SupprimerSaControllerTest extends WebTestCase
         return $sa;
     }
 
-    /**
-     * Test l'affichage de la page GET /supprimer-sa
-     */
+    private function createSalle(string $nomSalle = 'TestSalle'): Salle
+    {
+        $salle = new Salle();
+        $salle->setNomSalle($nomSalle);
+        $salle->setEtage(1);
+        $salle->setNbFenetres(2);
+        $salle->setDateCreation(new \DateTime());
+
+        $this->entityManager->persist($salle);
+        $this->entityManager->flush();
+
+        return $salle;
+    }
+
     public function testPageSupprimerSaEstAccessible(): void
     {
         $this->client->request('GET', '/supprimer-sa');
@@ -50,49 +59,82 @@ class SupprimerSaControllerTest extends WebTestCase
         $this->assertSelectorTextContains('h1', 'Supprimer un SA existant');
     }
 
-    /**
-     * Test la suppression d'un SA existant via POST
-     */
-    public function testSupprimerUnSaExistant(): void
+    public function testPageAfficheLaListeDesSa(): void
     {
-        // Créer un SA pour le test
+        $sa1 = $this->createSa();
+        $sa2 = $this->createSa();
+        $sa3 = $this->createSa();
+
+        $this->client->request('GET', '/supprimer-sa');
+
+        $this->assertResponseIsSuccessful();
+        $content = $this->client->getResponse()->getContent();
+        $this->assertStringContainsString((string)$sa1->getId(), $content);
+        $this->assertStringContainsString((string)$sa2->getId(), $content);
+        $this->assertStringContainsString((string)$sa3->getId(), $content);
+    }
+
+    public function testSupprimerUnSaNonAssigne(): void
+    {
         $sa = $this->createSa();
         $idSa = $sa->getId();
 
-        // Compter le nombre de SA avant la suppression
         $countAvant = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
 
-        // Soumettre le formulaire avec l'ID du SA
-        $crawler = $this->client->request('GET', '/supprimer-sa');
-        $form = $crawler->selectButton('Supprimer le SA')->form([
-            'id' => $idSa
-        ]);
+        $this->client->request('POST', '/supprimer-sa', ['id' => $idSa]);
 
-        $this->client->submit($form);
-
-        // Vérifier la redirection
         $this->assertResponseRedirects('/supprimer-sa');
         $this->client->followRedirect();
 
-        // Vérifier le message flash de succès
-        $this->assertSelectorExists('.message.success');
-        $this->assertSelectorTextContains('.message.success', "Le SA #$idSa a été supprimé");
+        $this->assertSelectorExists('.alert-success');
+        $this->assertSelectorTextContains('.alert-success', "Le SA #$idSa a été supprimé");
 
-        // Vérifier que le SA a bien été supprimé de la base de données
+        $this->entityManager->clear();
         $countApres = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
         $this->assertEquals($countAvant - 1, $countApres);
 
-        // Vérifier que le SA n'existe plus
         $saSupprimer = $this->entityManager->getRepository(SystemeAcquisition::class)->find($idSa);
         $this->assertNull($saSupprimer);
     }
 
-    /**
-     * Test la tentative de suppression d'un SA inexistant
-     */
+    public function testNePeutPasSupprimerUnSaAssigne(): void
+    {
+        $sa = $this->createSa();
+        $salle = $this->createSalle('D206');
+        $idSa = $sa->getId();
+
+        $salle->setSaId($sa);
+        $this->entityManager->persist($salle);
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+
+        // Recharger les entités
+        $sa = $this->entityManager->find(SystemeAcquisition::class, $idSa);
+        $countAvant = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
+
+        // Vérifier que le SA est bien lié à la salle
+        $this->assertNotNull($sa->getSalle());
+        $this->assertEquals('D206', $sa->getSalle()->getNomSalle());
+
+        $this->client->request('POST', '/supprimer-sa', ['id' => $idSa]);
+
+        $this->assertResponseRedirects('/supprimer-sa');
+        $this->client->followRedirect();
+
+        $this->assertSelectorExists('.alert-error');
+        $this->assertSelectorTextContains('.alert-error', "Impossible de supprimer le SA #$idSa");
+        $this->assertSelectorTextContains('.alert-error', 'il est assigné à la salle "D206"');
+
+        $this->entityManager->clear();
+        $countApres = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
+        $this->assertEquals($countAvant, $countApres);
+
+        $saVerif = $this->entityManager->getRepository(SystemeAcquisition::class)->find($idSa);
+        $this->assertNotNull($saVerif);
+    }
+
     public function testSupprimerUnSaInexistant(): void
     {
-        // Trouver un ID qui n'existe pas
         $maxId = $this->entityManager->getRepository(SystemeAcquisition::class)
             ->createQueryBuilder('s')
             ->select('MAX(s.id)')
@@ -101,91 +143,54 @@ class SupprimerSaControllerTest extends WebTestCase
         
         $idInexistant = ($maxId ?? 0) + 9999;
 
-        // Compter le nombre de SA avant
         $countAvant = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
 
-        // Soumettre le formulaire avec un ID inexistant
-        $crawler = $this->client->request('GET', '/supprimer-sa');
-        $form = $crawler->selectButton('Supprimer le SA')->form([
-            'id' => $idInexistant
-        ]);
+        $this->client->request('POST', '/supprimer-sa', ['id' => $idInexistant]);
 
-        $this->client->submit($form);
-
-        // Vérifier la redirection
         $this->assertResponseRedirects('/supprimer-sa');
         $this->client->followRedirect();
 
-        // Vérifier le message d'erreur
-        $this->assertSelectorExists('.message.error');
-        $this->assertSelectorTextContains('.message.error', "Le SA #$idInexistant n'existe pas");
+        $this->assertSelectorExists('.alert-error');
+        $this->assertSelectorTextContains('.alert-error', "Le SA #$idInexistant n'existe pas");
 
-        // Vérifier qu'aucun SA n'a été supprimé
         $countApres = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
         $this->assertEquals($countAvant, $countApres);
     }
 
-    /**
-     * Test la validation avec un ID vide
-     */
     public function testSupprimerAvecIdVide(): void
     {
-        // Compter le nombre de SA avant
         $countAvant = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
 
-        // Soumettre le formulaire sans ID
-        $this->client->request('POST', '/supprimer-sa', [
-            'id' => ''
-        ]);
+        $this->client->request('POST', '/supprimer-sa', ['id' => '']);
 
-        // Vérifier la redirection
         $this->assertResponseRedirects('/supprimer-sa');
         $this->client->followRedirect();
 
-        // Vérifier le message d'erreur
-        $this->assertSelectorExists('.message.error');
-        $this->assertSelectorTextContains('.message.error', 'Veuillez saisir un ID valide');
+        $this->assertSelectorExists('.alert-error');
+        $this->assertSelectorTextContains('.alert-error', 'Veuillez saisir un ID valide');
 
-        // Vérifier qu'aucun SA n'a été supprimé
         $countApres = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
         $this->assertEquals($countAvant, $countApres);
     }
 
-    /**
-     * Test la validation avec un ID négatif
-     */
     public function testSupprimerAvecIdNegatif(): void
     {
-        // Compter le nombre de SA avant
         $countAvant = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
 
-        // Soumettre le formulaire avec un ID négatif
-        $crawler = $this->client->request('GET', '/supprimer-sa');
-        $form = $crawler->selectButton('Supprimer le SA')->form([
-            'id' => -1
-        ]);
+        $this->client->request('POST', '/supprimer-sa', ['id' => -1]);
 
-        $this->client->submit($form);
-
-        // Vérifier la redirection
         $this->assertResponseRedirects('/supprimer-sa');
         $this->client->followRedirect();
 
-        // Vérifier le message d'erreur (ID inexistant)
-        $this->assertSelectorExists('.message.error');
-        $this->assertSelectorTextContains('.message.error', "n'existe pas");
+        $this->assertSelectorExists('.alert-error');
+        $this->assertSelectorTextContains('.alert-error', "n'existe pas");
 
-        // Vérifier qu'aucun SA n'a été supprimé
         $countApres = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
         $this->assertEquals($countAvant, $countApres);
     }
 
-    /**
-     * Test la suppression de plusieurs SA successifs
-     */
-    public function testSupprimerPlusieursSaSuccessifs(): void
+    public function testSupprimerPlusieursSaNonAssignesSuccessifs(): void
     {
-        // Créer 3 SA pour le test
         $sa1 = $this->createSa();
         $sa2 = $this->createSa();
         $sa3 = $this->createSa();
@@ -194,124 +199,161 @@ class SupprimerSaControllerTest extends WebTestCase
         $id2 = $sa2->getId();
         $id3 = $sa3->getId();
 
-        // Compter le nombre de SA avant
         $countAvant = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
 
-        // Supprimer le premier SA
-        $crawler = $this->client->request('GET', '/supprimer-sa');
-        $form = $crawler->selectButton('Supprimer le SA')->form(['id' => $id1]);
-        $this->client->submit($form);
+        $this->client->request('POST', '/supprimer-sa', ['id' => $id1]);
         $this->client->followRedirect();
+        $this->assertSelectorTextContains('.alert-success', "Le SA #$id1 a été supprimé");
 
-        // Vérifier que le premier SA est supprimé
-        $this->assertSelectorTextContains('.message.success', "Le SA #$id1 a été supprimé");
+        $this->entityManager->clear();
         $countApres1 = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
         $this->assertEquals($countAvant - 1, $countApres1);
 
-        // Supprimer le deuxième SA
-        $crawler = $this->client->request('GET', '/supprimer-sa');
-        $form = $crawler->selectButton('Supprimer le SA')->form(['id' => $id2]);
-        $this->client->submit($form);
+        $this->client->request('POST', '/supprimer-sa', ['id' => $id2]);
         $this->client->followRedirect();
+        $this->assertSelectorTextContains('.alert-success', "Le SA #$id2 a été supprimé");
 
-        // Vérifier que le deuxième SA est supprimé
-        $this->assertSelectorTextContains('.message.success', "Le SA #$id2 a été supprimé");
+        $this->entityManager->clear();
         $countApres2 = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
         $this->assertEquals($countAvant - 2, $countApres2);
 
-        // Supprimer le troisième SA
-        $crawler = $this->client->request('GET', '/supprimer-sa');
-        $form = $crawler->selectButton('Supprimer le SA')->form(['id' => $id3]);
-        $this->client->submit($form);
+        $this->client->request('POST', '/supprimer-sa', ['id' => $id3]);
         $this->client->followRedirect();
+        $this->assertSelectorTextContains('.alert-success', "Le SA #$id3 a été supprimé");
 
-        // Vérifier que le troisième SA est supprimé
-        $this->assertSelectorTextContains('.message.success', "Le SA #$id3 a été supprimé");
+        $this->entityManager->clear();
         $countApres3 = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
         $this->assertEquals($countAvant - 3, $countApres3);
     }
 
-    /**
-     * Test que la méthode GET n'effectue pas de suppression
-     */
+    public function testSupprimerUnSaApresDesassignation(): void
+    {
+        $salle = $this->createSalle('TestSalle');
+        $sa = $this->createSa();
+        $idSa = $sa->getId();
+
+        $salle->setSaId($sa);
+        $this->entityManager->persist($salle);
+        $this->entityManager->flush();
+
+        $salle->setSaId(null);
+        $this->entityManager->persist($salle);
+        $this->entityManager->flush();
+
+        $this->client->request('POST', '/supprimer-sa', ['id' => $idSa]);
+        $this->client->followRedirect();
+
+        $this->assertSelectorExists('.alert-success');
+        $this->assertSelectorTextContains('.alert-success', "Le SA #$idSa a été supprimé");
+
+        $this->entityManager->clear();
+        $saSupprimer = $this->entityManager->getRepository(SystemeAcquisition::class)->find($idSa);
+        $this->assertNull($saSupprimer);
+    }
+
     public function testGetNeSupprimePasDeSa(): void
     {
-        // Créer un SA
         $sa = $this->createSa();
 
-        // Compter le nombre de SA avant
         $countAvant = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
 
-        // Faire une requête GET
         $this->client->request('GET', '/supprimer-sa');
 
-        // Vérifier qu'aucun SA n'a été supprimé
         $countApres = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
         $this->assertEquals($countAvant, $countApres);
 
-        // Vérifier que le SA existe toujours
         $saVerif = $this->entityManager->getRepository(SystemeAcquisition::class)->find($sa->getId());
         $this->assertNotNull($saVerif);
     }
 
-    /**
-     * Test la tentative de double suppression (supprimer le même SA deux fois)
-     */
     public function testDoubleSuppression(): void
     {
-        // Créer un SA
         $sa = $this->createSa();
         $idSa = $sa->getId();
 
-        // Première suppression
-        $crawler = $this->client->request('GET', '/supprimer-sa');
-        $form = $crawler->selectButton('Supprimer le SA')->form(['id' => $idSa]);
-        $this->client->submit($form);
+        $this->client->request('POST', '/supprimer-sa', ['id' => $idSa]);
         $this->client->followRedirect();
 
-        // Vérifier le succès
-        $this->assertSelectorTextContains('.message.success', "Le SA #$idSa a été supprimé");
+        $this->assertSelectorTextContains('.alert-success', "Le SA #$idSa a été supprimé");
 
-        // Compter le nombre de SA après la première suppression
+        $this->entityManager->clear();
         $countApresPremiereSupp = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
 
-        // Deuxième suppression du même ID
-        $crawler = $this->client->request('GET', '/supprimer-sa');
-        $form = $crawler->selectButton('Supprimer le SA')->form(['id' => $idSa]);
-        $this->client->submit($form);
+        $this->client->request('POST', '/supprimer-sa', ['id' => $idSa]);
         $this->client->followRedirect();
 
-        // Vérifier le message d'erreur
-        $this->assertSelectorTextContains('.message.error', "Le SA #$idSa n'existe pas");
+        $this->assertSelectorTextContains('.alert-error', "Le SA #$idSa n'existe pas");
 
-        // Vérifier que le nombre de SA n'a pas changé
         $countApresDeuxiemeSupp = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
         $this->assertEquals($countApresPremiereSupp, $countApresDeuxiemeSupp);
     }
 
-    /**
-     * Test avec un ID valide mais de type string numérique
-     */
     public function testSupprimerAvecIdStringNumerique(): void
     {
-        // Créer un SA
         $sa = $this->createSa();
         $idSa = $sa->getId();
 
-        // Soumettre avec un string
-        $this->client->request('POST', '/supprimer-sa', [
-            'id' => (string)$idSa
-        ]);
+        $this->client->request('POST', '/supprimer-sa', ['id' => (string)$idSa]);
 
-        // Vérifier la redirection
         $this->assertResponseRedirects('/supprimer-sa');
         $this->client->followRedirect();
 
-        // Vérifier le succès (le contrôleur devrait gérer la conversion)
-        $this->assertSelectorExists('.message.success');
+        $this->assertSelectorExists('.alert-success');
 
-        // Vérifier que le SA a été supprimé
+        $this->entityManager->clear();
         $saSupprimer = $this->entityManager->getRepository(SystemeAcquisition::class)->find($idSa);
         $this->assertNull($saSupprimer);
+    }
+
+    public function testMessageErreurContiensNomSalle(): void
+    {
+        $sa = $this->createSa();
+        $salle = $this->createSalle('Amphithéâtre A');
+        $idSa = $sa->getId();
+
+        $salle->setSaId($sa);
+        $this->entityManager->persist($salle);
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+
+        $this->client->request('POST', '/supprimer-sa', ['id' => $idSa]);
+        $this->client->followRedirect();
+
+        $this->assertSelectorTextContains('.alert-error', 'Amphithéâtre A');
+    }
+
+    public function testSupprimerMelangeSaAssignesEtNonAssignes(): void
+    {
+        $sa1 = $this->createSa();
+        $sa2 = $this->createSa();
+        $sa3 = $this->createSa();
+
+        $id1 = $sa1->getId();
+        $id2 = $sa2->getId();
+        $id3 = $sa3->getId();
+
+        $salle = $this->createSalle('TestSalle');
+        $salle->setSaId($sa2);
+        $this->entityManager->persist($salle);
+        $this->entityManager->flush();
+
+        $countAvant = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
+
+        $this->client->request('POST', '/supprimer-sa', ['id' => $id1]);
+        $this->client->followRedirect();
+        $this->assertSelectorExists('.alert-success');
+
+        $this->client->request('POST', '/supprimer-sa', ['id' => $id2]);
+        $this->client->followRedirect();
+        $this->assertSelectorExists('.alert-error');
+        $this->assertSelectorTextContains('.alert-error', 'Impossible de supprimer');
+
+        $this->client->request('POST', '/supprimer-sa', ['id' => $id3]);
+        $this->client->followRedirect();
+        $this->assertSelectorExists('.alert-success');
+
+        $this->entityManager->clear();
+        $countApres = $this->entityManager->getRepository(SystemeAcquisition::class)->count([]);
+        $this->assertEquals($countAvant - 2, $countApres);
     }
 }

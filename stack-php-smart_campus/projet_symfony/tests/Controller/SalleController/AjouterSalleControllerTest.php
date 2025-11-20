@@ -15,7 +15,7 @@ class AjouterSalleControllerTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('form');
-        self::assertSelectorTextContains('button', 'Ajouter');
+        self::assertSelectorTextContains('form button[type="submit"]', 'Ajouter la salle');
     }
 
     public function testErreurNomSalleInvalide()
