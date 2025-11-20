@@ -1,23 +1,26 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ModifierSalleController!{% endblock %}
-{% block body %}
+{% block title %}Modifier une salle{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
     <style>
-        body {
+        .page-container {
             font-family: Arial, sans-serif;
             background-color: #f5f7fa;
             text-align: center;
             padding: 60px;
+            min-height: calc(100vh - 60px);
         }
 
-        h1 {
+        .page-container h1 {
             font-size: 2em;
             font-weight: bold;
             margin-bottom: 40px;
         }
 
-        .card {
-            background-color: #98c1d9;
+        .page-container .card {
+            background-color: #8ecae6;
             padding: 40px;
             border-radius: 20px;
             max-width: 800px;
@@ -25,7 +28,12 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        label {
+        .page-container p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .page-container label {
             font-size: 1.1em;
             display: block;
             text-align: left;
@@ -33,7 +41,7 @@
             max-width: 500px;
         }
 
-        input {
+        .page-container input {
             padding: 10px;
             width: 80%;
             max-width: 500px;
@@ -44,7 +52,7 @@
             text-align: center;
         }
 
-        button {
+        .page-container button {
             background-color: #4caf50;
             color: white;
             border: none;
@@ -57,17 +65,27 @@
             max-width: 600px;
         }
 
-        button:hover {
+        .page-container button:hover {
             background-color: #43a047;
         }
 
-        .message {
-            color: green;
+        .page-container .message {
             font-weight: bold;
             margin-top: 20px;
         }
-    </style>
 
+        .page-container .message.success {
+            color: green;
+        }
+
+        .page-container .message.error {
+            color: red;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="page-container">
     <h1>Modifier la salle {{ salle.nomSalle ?? 'Inconnue' }}</h1>
 
     <div class="card">
@@ -88,13 +106,13 @@
         </form>
 
         {% for message in app.flashes('error') %}
-            <div class="message" style="color: red; font-weight: bold;">
+            <div class="message error">
                 {{ message }}
             </div>
         {% endfor %}
 
         {% for message in app.flashes('success') %}
-            <div class="message" style="color: green; font-weight: bold;">
+            <div class="message success">
                 {{ message }}
             </div>
         {% endfor %}
@@ -102,9 +120,9 @@
 
     <script>
         function confirmerModifier() {
-
             return confirm("Voulez-vous vraiment modifier cette salle ?");
         }
     </script>
+</div>
 {% endblock %}
 
