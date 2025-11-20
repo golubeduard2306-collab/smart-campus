@@ -44,6 +44,32 @@ final class InfoSalleController extends AbstractController
         if ($request->isMethod('POST')) {
             $action = $request->request->get('action');
 
+            // Supprimer la salle
+            if ($action === 'supprimer') {
+                // Vérifier qu'il n'y a pas de demande en cours
+                if ($demandeEnCours) {
+                    $this->addFlash('error', 'Impossible de supprimer la salle : une demande est en cours.');
+                    return $this->redirectToRoute('app_info_salle', ['nomSalle' => $nomSalle]);
+                }
+                
+                // Vérifier qu'aucun SA n'est installé
+                if ($salle->getSaId() !== null) {
+                    $this->addFlash('error', 'Impossible de supprimer la salle : un système d\'acquisition est installé.');
+                    return $this->redirectToRoute('app_info_salle', ['nomSalle' => $nomSalle]);
+                }
+                
+                // Supprimer toutes les demandes anciennes liées à cette salle
+                foreach ($salle->getDemandes() as $demande) {
+                    $manager->remove($demande);
+                }
+                
+                // Supprimer la salle
+                $manager->remove($salle);
+                $manager->flush();
+                
+                return $this->redirectToRoute('app_selectionner_salle');
+            }
+
             // Annuler une demande en cours
             if ($action === 'annuler' && $demandeEnCours) {
                 $manager->remove($demandeEnCours);
