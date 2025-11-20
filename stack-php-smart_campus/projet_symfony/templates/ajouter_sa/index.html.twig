@@ -90,6 +90,7 @@
 
     <div class="card">
         <p>Ajouter un ou plusieurs SA dans la base de données</p>
+        <p style="font-size: 1.1em; margin-bottom: 30px;">SA disponibles en stock : <strong>{{ nbSaDisponibles }}</strong></p>
 
         {# Formulaire qui envoie une requête POST au contrôleur #}
         <form method="post" action="{{ path('app_ajouter_sa') }}" onsubmit="return confirmerAjout();">
@@ -98,7 +99,7 @@
                 <input type="number" id="quantite" name="quantite" value="1" min="1" max="100" required>
             </div>
             
-            <button type="submit">Ajouter SA</button>
+            <button type="submit">Ajouter la quantité</button>
         </form>
 
         {# Messages de confirmation ou d'erreur #}

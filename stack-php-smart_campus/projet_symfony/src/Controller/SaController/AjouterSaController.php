@@ -38,14 +38,19 @@ class AjouterSaController extends AbstractController
             $em->flush();
 
             $message = $quantite > 1 
-                ? "$quantite nouveaux SA ont été ajoutés à la base de données."
-                : 'Un nouveau SA a été ajouté à la base de données.';
+                ? "$quantite nouveaux SA ont été ajoutés à votre stock."
+                : 'Un nouveau SA a été ajouté à votre stock.';
             
             $this->addFlash('success', $message);
 
             return $this->redirectToRoute('app_ajouter_sa');
         }
 
-        return $this->render('ajouter_sa/index.html.twig');
+        // Compter le nombre de SA disponibles en stock (statut Inactif)
+        $nbSaDisponibles = $em->getRepository(SystemeAcquisition::class)->count(['statut' => 'Inactif']);
+
+        return $this->render('ajouter_sa/index.html.twig', [
+            'nbSaDisponibles' => $nbSaDisponibles,
+        ]);
     }
 }
