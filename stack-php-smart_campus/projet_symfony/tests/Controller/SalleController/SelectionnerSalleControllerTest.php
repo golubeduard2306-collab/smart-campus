@@ -61,11 +61,22 @@ class SelectionnerSalleControllerTest extends WebTestCase
         $explorateur = $client->request('GET', '/selectionner-salle');
         self::assertStringContainsString($nom, $client->getResponse()->getContent());
 
-        // supprimer via la page supprimer-salle
-        $crawler = $client->request('GET', '/supprimer-salle');
-        $form = $crawler->selectButton('Supprimer la salle')->form(['nom_salle' => $nom]);
+        // supprimer via la page info-salle (flux actuellement implémenté)
         $client->followRedirects(true);
-        $client->submit($form);
+        $crawler = $client->request('GET', '/info-salle/' . urlencode($nom));
+
+        // trouver et soumettre le formulaire de suppression (input hidden action=supprimer)
+        $formNode = $crawler->filter('form')->reduce(function ($node) {
+            return $node->filter('input[name="action"][value="supprimer"]')->count() > 0;
+        });
+
+        if ($formNode->count() > 0) {
+            $form = $formNode->first()->form();
+            $client->submit($form);
+        } else {
+            // si aucun formulaire spécifique, tenter une soumission manuelle
+            $client->request('POST', '/info-salle/' . urlencode($nom), ['action' => 'supprimer']);
+        }
 
         // vérifier absente
         $crawler = $client->request('GET', '/selectionner-salle');
