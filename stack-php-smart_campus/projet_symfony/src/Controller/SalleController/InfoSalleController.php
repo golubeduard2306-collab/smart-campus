@@ -26,7 +26,8 @@ final class InfoSalleController extends AbstractController
     {
         // Récupération de la salle
         $salle = $salleRepository->findOneBy(['nom_salle' => $nomSalle]);
-        
+
+
         if (!$salle) {
             throw $this->createNotFoundException('La salle "' . $nomSalle . '" n\'existe pas !');
         }
@@ -59,13 +60,17 @@ final class InfoSalleController extends AbstractController
                 }
                 
                 // Supprimer toutes les demandes anciennes liées à cette salle
-                foreach ($salle->getDemandes() as $demande) {
+                // On doit d'abord supprimer les demandes car il y a une contrainte de clé étrangère
+                $demandeRepository = $manager->getRepository(Demande::class);
+                $toutes_les_demandes = $demandeRepository->findBy(['idSalle' => $salle]);
+                foreach ($toutes_les_demandes as $demande) {
                     $manager->remove($demande);
                 }
+                $manager->flush(); // Flush pour supprimer d'abord les demandes
                 
                 // Supprimer la salle
                 $manager->remove($salle);
-                $manager->flush();
+                $manager->flush(); // Flush pour supprimer la salle
                 
                 return $this->redirectToRoute('app_selectionner_salle');
             }
