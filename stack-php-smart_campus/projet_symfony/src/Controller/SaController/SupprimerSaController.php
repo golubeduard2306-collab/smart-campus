@@ -21,10 +21,15 @@ final class SupprimerSaController extends AbstractController
                 $sa = $em->getRepository(SystemeAcquisition::class)->find($id);
 
                 if ($sa) {
-                    $em->remove($sa);
-                    $em->flush();
+                    // Vérifier si le SA est assigné à une salle
+                    if ($sa->getSalle() !== null) {
+                        $this->addFlash('error', 'Impossible de supprimer le SA #' . $id . ' : il est assigné à la salle "' . $sa->getSalle()->getNomSalle() . '".');
+                    } else {
+                        $em->remove($sa);
+                        $em->flush();
 
-                    $this->addFlash('success', 'Le SA #' . $id . ' a été supprimé de la base de données.');
+                        $this->addFlash('success', 'Le SA #' . $id . ' a été supprimé de la base de données.');
+                    }
                 } else {
                     $this->addFlash('error', 'Le SA #' . $id . ' n\'existe pas dans la base de données.');
                 }
@@ -35,6 +40,11 @@ final class SupprimerSaController extends AbstractController
             return $this->redirectToRoute('app_supprimer_sa');
         }
 
-        return $this->render('supprimer_sa/index.html.twig');
+        // Récupérer tous les SA pour affichage
+        $sas = $em->getRepository(SystemeAcquisition::class)->findAll();
+
+        return $this->render('supprimer_sa/index.html.twig', [
+            'sas' => $sas,
+        ]);
     }
 }

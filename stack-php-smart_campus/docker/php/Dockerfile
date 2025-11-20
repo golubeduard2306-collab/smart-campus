@@ -33,11 +33,11 @@ RUN docker-php-ext-install mysqli pdo_mysql
 RUN apk add icu-dev icu-data-full
 RUN docker-php-ext-install intl
 
-# Installer composer
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-RUN php composer-setup.php
-RUN php -r "unlink('composer-setup.php');"
-RUN mv composer.phar /usr/local/bin/composer
+# Installer Composer proprement
+RUN apk add --no-cache curl ca-certificates \
+    && curl -sS https://getcomposer.org/installer -o composer-setup.php \
+    && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+    && rm composer-setup.php
 
 # Installer la CLI Symfony
 RUN apk add --no-cache bash

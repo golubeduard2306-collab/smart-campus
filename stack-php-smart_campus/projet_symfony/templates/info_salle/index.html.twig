@@ -119,9 +119,12 @@
 
     <div class="card">
         <p>Modifier les informations de la salle {{ salle.nomSalle }}</p>
-        <button class="btn-secondary">Modifier</button>
+        <button onclick="window.location.href='../modifier-salle/{{salle.nomSalle}}';" class="btn-secondary">Modifier</button>
         <p>Vous pouvez supprimer la salle {{ salle.nomSalle }}</p>
-        <button class="btn-danger">Supprimer</button>
+        <form method="POST" action="{{ path('app_info_salle', {'nomSalle': salle.nomSalle}) }}" onsubmit="return confirmerSuppression();">
+            <input type="hidden" name="action" value="supprimer">
+            <button type="submit" class="btn-danger">Supprimer</button>
+        </form>
     </div>
 
     {% if demandeEnCours %}
@@ -143,7 +146,7 @@
                 <button type="submit">Installer un SA</button>
             </form>
         </div>
-    {% else %}
+    {% elseif saInstalle %}
         <div class="card">
             <p>Un SA est installé dans la salle {{ salle.nomSalle }}.</p>
             <p>Pour désinstaller le système d'acquisition, cliquer sur le bouton ci-dessous :</p>
@@ -163,6 +166,9 @@
         }
         function confirmerDesinstallation() {
             return confirm("Voulez-vous vraiment faire une demande de désinstallation ?");
+        }
+        function confirmerSuppression() {
+            return confirm("Êtes-vous sûr de vouloir supprimer définitivement cette salle ? Cette action est irréversible.");
         }
     </script>
 </div>

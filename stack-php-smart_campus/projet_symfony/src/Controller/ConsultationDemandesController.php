@@ -46,16 +46,58 @@ final class ConsultationDemandesController extends AbstractController
     {
         $demande = $em->getRepository(Demande::class)->find($id);
         
-        if ($demande) {
-            $demande->setStatut('Terminé');
-            $demande->getIdSa()->setStatut("Actif");
-            $demande->getIdSalle()->setSaId($demande->getIdSa());
-            $em->flush();
-
-            
-            $this->addFlash('success', 'La demande a été archivée avec succès.');
-        } else {
+        if (!$demande) {
             $this->addFlash('error', 'Demande introuvable.');
+            return $this->redirectToRoute('app_consultation_demandes');
+        }
+
+        if ($demande->getTypeDemande() == 'Installation') {
+            // Marquer la demande comme terminée
+            $demande->setStatut('Terminé');
+            
+            $sa = $demande->getIdSa();
+            $salle = $demande->getIdSalle();
+            
+            if ($sa && $salle) {
+                // Mettre le SA comme Actif
+                $sa->setStatut('Actif');
+                
+                // Lier le SA à la salle (relation bidirectionnelle)
+                $salle->setSaId($sa);
+                $sa->setSalle($salle);
+                
+                $em->persist($sa);
+                $em->persist($salle);
+            }
+            
+            $em->persist($demande);
+            $em->flush();
+            
+            $this->addFlash('success', 'La demande d\'installation a été confirmée avec succès.');
+        }
+        elseif ($demande->getTypeDemande() == 'Désinstallation') {
+            // Marquer la demande comme terminée
+            $demande->setStatut('Terminé');
+            
+            $sa = $demande->getIdSa();
+            $salle = $demande->getIdSalle();
+            
+            if ($sa && $salle) {
+                // Mettre le SA comme Inactif
+                $sa->setStatut('Inactif');
+                
+                // Détacher le SA de la salle (relation bidirectionnelle)
+                $salle->setSaId(null);
+                $sa->setSalle(null);
+                
+                $em->persist($sa);
+                $em->persist($salle);
+            }
+            
+            $em->persist($demande);
+            $em->flush();
+            
+            $this->addFlash('success', 'La demande de désinstallation a été confirmée avec succès.');
         }
         
         return $this->redirectToRoute('app_consultation_demandes');
