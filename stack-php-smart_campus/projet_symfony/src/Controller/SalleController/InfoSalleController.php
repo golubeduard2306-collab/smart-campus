@@ -77,6 +77,15 @@ final class InfoSalleController extends AbstractController
 
             // Annuler une demande en cours
             if ($action === 'annuler' && $demandeEnCours) {
+                // Si c'est une demande d'installation qui est annulée, remettre le SA en Inactif
+                if ($demandeEnCours->getTypeDemande() === 'Installation') {
+                    $sa = $demandeEnCours->getIdSa();
+                    if ($sa) {
+                        $sa->setStatut('Inactif');
+                        $manager->persist($sa);
+                    }
+                }
+                
                 $manager->remove($demandeEnCours);
                 $manager->flush();
                 
@@ -112,6 +121,10 @@ final class InfoSalleController extends AbstractController
                 $demande->setStatut('En cours');
                 $demande->setIdSalle($salle);
                 $demande->setIdSa($saInactif);
+
+                // Passer le SA en statut Actif dès qu'une demande est créée
+                $saInactif->setStatut('Actif');
+                $manager->persist($saInactif);
 
                 $manager->persist($demande);
                 $manager->flush();

@@ -165,8 +165,8 @@
                         <td>{{ sa.getSalle() ? sa.getSalle().getNomSalle() : '—' }}</td>
                         <td>{{ sa.statut }}</td>
                         <td>
-                            {% if sa.getSalle() %}
-                                <button type="button" class="btn" disabled title="SA assigné à une salle">Suppression impossible</button>
+                            {% if sa.statut == 'Actif' %}
+                                <button type="button" class="btn" disabled title="SA actif (en cours d'utilisation)">Suppression impossible</button>
                             {% else %}
                                 <form method="post" action="{{ path('app_supprimer_sa') }}" onsubmit="return confirm('Voulez-vous vraiment supprimer le SA #{{ sa.id }} ?');">
                                     <input type="hidden" name="id" value="{{ sa.id }}">

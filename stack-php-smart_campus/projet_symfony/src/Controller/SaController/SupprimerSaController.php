@@ -21,9 +21,9 @@ final class SupprimerSaController extends AbstractController
                 $sa = $em->getRepository(SystemeAcquisition::class)->find($id);
 
                 if ($sa) {
-                    // Vérifier si le SA est assigné à une salle
-                    if ($sa->getSalle() !== null) {
-                        $this->addFlash('error', 'Impossible de supprimer le SA #' . $id . ' : il est assigné à la salle "' . $sa->getSalle()->getNomSalle() . '".');
+                    // Vérifier si le SA est actif (utilisé dans une demande ou assigné)
+                    if ($sa->getStatut() === 'Actif') {
+                        $this->addFlash('error', 'Impossible de supprimer le SA #' . $id . ' : il est actuellement actif (utilisé dans une demande ou assigné à une salle).');
                     } else {
                         $em->remove($sa);
                         $em->flush();
