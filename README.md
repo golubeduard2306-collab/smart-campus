@@ -31,9 +31,6 @@ Ce document détaille le plan de développement du projet, divisé en trois rele
 ## Release 2 (R2) : Maintenance, Visualisation et Roles
 **Objectif :** Introduction des rôles (Technicien), visualisation des données sur base simulée et outils de maintenance.
 
-### Authentification et Navigation
-- [ ] Se connecter à son espace de travail
-- [ ] Assurer la navigation globale sur le site
 
 ### Visualisation des Données (Données Simulées)
 - [ ] Afficher des données simulées
@@ -43,18 +40,25 @@ Ce document détaille le plan de développement du projet, divisé en trois rele
 
 ### Espace Technicien et Maintenance
 - [ ] Afficher la liste de toutes les salles et SA (Vue Technicien)
-- [ ] Accéder à l'espace demande installation
-- [ ] Passer en mode maintenance
-- [ ] Effectuer une installation manuelle avec validation de test
+- [x] Accéder à l'espace demande installation
 
-### Gestion des Alertes (Base)
-- [ ] Accéder à l'interface alertes
-- [ ] Filtrer par criticité/type
 
 ---
 
 ## Release 3 (R3) : UX/UI, Temps Reel et Tableau de Bord
 **Objectif :** Expérience utilisateur fluide, intégration des données temps réel, tableau de bord complet et dimension écologique.
+
+### Espace Technicien et Maintenance
+- [ ] Passer en mode maintenance
+- [ ] Effectuer une installation manuelle avec validation de test
+
+### Authentification et Navigation
+- [ ] Se connecter à son espace de travail
+- [ ] Assurer la navigation globale sur le site
+
+### Gestion des Alertes (Base)
+- [ ] Accéder à l'interface alertes
+- [ ] Filtrer par criticité/type
 
 ### UX/UI et Présentation
 - [ ] Amélioration UX/UI et navigation fluide
