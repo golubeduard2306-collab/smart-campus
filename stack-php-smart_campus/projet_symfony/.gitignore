@@ -19,6 +19,10 @@
 /assets/vendor/
 ###< symfony/asset-mapper ###
 
+# Fichiers d'environnement (contiennent des secrets)
+/.env
+/.env.dev
+/.env.test
 
-Kolan Le Plus belle Homme de France, je suis amoureux de lui <3, je l'aime de tout mon coeur.
-je suis l'etre supreme qui a creez les Hommes avec des gros bazouzouzou et des grosses fesses rebondies
+# Rapports de couverture (générés)
+/reports/

@@ -1,80 +1,85 @@
-# Roadmap du Projet - Suivi des Releases
+# Smart Campus
 
-Ce document détaille le plan de développement du projet, divisé en trois releases majeures (R1, R2, R3).
+> Plateforme de supervision environnementale des salles du campus, basée sur des capteurs IoT (Systèmes d'Acquisition) pilotés via une interface web Symfony.
 
----
+## Stack technique
 
-## Release 1 (R1) : Socle Technique et Administration
-**Objectif :** Mise en place de l'architecture, de la base de données et des fonctionnalités de gestion pour le Chargé de Mission.
+- **Backend :** PHP 8 / Symfony 7 — Doctrine ORM — PHPUnit
+- **Base de données :** MariaDB
+- **Frontend :** Twig — Asset Mapper — Chart.js
+- **Infrastructure :** Docker / Docker Compose — phpMyAdmin
+- **Intégration capteurs :** API externe de capture de données (Systèmes d'Acquisition)
+- **Outils :** Composer — Symfony CLI
 
-### Backend et Infrastructure
-- [x] Mise en place du stockage de données (Base de Données)
+## Fonctionnalités
 
-### Gestion des Salles (Espace Chargé de Mission)
-- [x] Permettre au CM d'ajouter facilement une nouvelle salle
-- [x] Permettre au CM d'éditer les informations d'une salle existante
-- [x] Supprimer une salle via un bouton de suppression
-- [x] Afficher la liste de toutes les salles créées (avec redirection vers page dédiée)
+### Espace Chargé de Mission
+- Gestion des salles (ajout, modification, suppression, liste)
+- Gestion des Systèmes d'Acquisition — SA (ajout, suppression)
+- Création et consultation de demandes d'installation / désinstallation de SA
+- Visualisation des données environnementales par salle (température, humidité, CO₂...)
+- Gestion des alertes avec filtrage par criticité et type
+- Tableau de bord global
 
-### Gestion des SA (Systèmes d'Acquisition)
-- [x] Ajouter un nouveau SA via un formulaire rapide
-- [x] Modifier un SA via un formulaire de modification (Maquette à faire)
-- [x] Supprimer un SA via un bouton de suppression (Maquette à faire)
+### Espace Technicien
+- Vue de l'ensemble des salles et SA
+- Accès aux demandes d'installation
+- Consultation de l'historique des données
+- Gestion des seuils d'alerte
 
-### Gestion des Demandes
-- [x] Créer une demande d'installation
-- [x] Créer une demande de désinstallation
-- [x] Consulter la liste des demandes
+### Transverse
+- Authentification avec deux rôles : Chargé de Mission et Technicien
+- Réinitialisation de mot de passe par email
+- Navigation responsive
 
----
+## Installation & Lancement
 
-## Release 2 (R2) : Maintenance, Visualisation et Roles
-**Objectif :** Introduction des rôles (Technicien), visualisation des données sur base simulée et outils de maintenance.
+**Prérequis :** Docker, Docker Compose
 
+```bash
+# Cloner le dépôt
+git clone https://github.com/golubeduard2306-collab/smart-campus.git
+cd smart-campus/stack-php-smart_campus
 
-### Visualisation des Données (Données Simulées)
-- [ ] Afficher des données simulées
-- [ ] Sélectionner une salle pour accéder à la page de visualisation
-- [ ] Ouvrir l'historique
-- [ ] Changer la période concernée
+# Copier et remplir le fichier d'environnement
+cp projet_symfony/.env.example projet_symfony/.env
+# Éditer projet_symfony/.env avec vos valeurs locales
 
-### Espace Technicien et Maintenance
-- [ ] Afficher la liste de toutes les salles et SA (Vue Technicien)
-- [x] Accéder à l'espace demande installation
+# Lancer les conteneurs
+docker compose up -d
 
+# Installer les dépendances PHP
+docker exec smart_campus_php composer install -C projet_symfony
 
----
+# Créer le schéma de base de données
+docker exec smart_campus_php sh -c "cd projet_symfony && php bin/console doctrine:migrations:migrate --no-interaction"
 
-## Release 3 (R3) : UX/UI, Temps Reel et Tableau de Bord
-**Objectif :** Expérience utilisateur fluide, intégration des données temps réel, tableau de bord complet et dimension écologique.
+# (Optionnel) Charger les données de test
+docker exec smart_campus_php sh -c "cd projet_symfony && php bin/console doctrine:fixtures:load --no-interaction"
+```
 
-### Espace Technicien et Maintenance
-- [ ] Passer en mode maintenance
-- [ ] Effectuer une installation manuelle avec validation de test
+L'application est accessible sur `http://localhost:8888`
+phpMyAdmin est accessible sur `http://localhost:8886`
 
-### Authentification et Navigation
-- [ ] Se connecter à son espace de travail
-- [ ] Assurer la navigation globale sur le site
+> **Performance sous Windows :** Pour éviter les lenteurs Docker/Windows, placer le dépôt dans WSL2 (voir `stack-php-smart_campus/PERFS.md`).
 
-### Gestion des Alertes (Base)
-- [ ] Accéder à l'interface alertes
-- [ ] Filtrer par criticité/type
+## Variables d'environnement
 
-### UX/UI et Présentation
-- [ ] Amélioration UX/UI et navigation fluide
-- [ ] Afficher la page d'accueil
-- [ ] Afficher la présentation du projet
-- [ ] Afficher la section "Bons Gestes" et explications objectifs écologiques
-- [ ] (Optionnel) Afficher un plan du bâtiment (IUT) avec les salles
+Copier `projet_symfony/.env.example` vers `projet_symfony/.env` et renseigner :
 
-### Dashboard et Données Avancées
-- [ ] Intégration des données temps réel
-- [ ] Afficher Tableau de Bord global (données salle, alertes, installation)
-- [ ] Afficher Tableau de Bord des tâches à faire
-- [ ] Accéder à l'historique général
-- [ ] Utiliser un sélecteur de période précis
+| Variable | Description |
+|---|---|
+| `APP_ENV` | Environnement (`dev` ou `prod`) |
+| `APP_SECRET` | Clé secrète Symfony (32 caractères hex) |
+| `DATABASE_URL` | URL de connexion MariaDB |
+| `MAILER_DSN` | Configuration SMTP pour les emails |
+| `API_CAPTURE_USERNAME` | Identifiant de l'API de capture des données capteurs |
+| `API_CAPTURE_PASSWORD` | Mot de passe de l'API de capture des données capteurs |
 
-### Gestion Avancée des Incidents
-- [ ] Définition et application des seuils d'alerte
-- [ ] Voir la liste complète des alertes
-- [ ] Créer un signalement manuel via un formulaire simple
+## Contexte
+
+IUT La Rochelle — BUT Informatique — 2025-2026
+SAÉ 3.4 — 2ème année
+
+Projet réalisé en équipe de 5 avec méthode Scrum :
+Eduard GOLUB *(Scrum Master)*, Kolan Allain, Noé Leteurtre, Simon Plault, Morgan Vanvelthem
